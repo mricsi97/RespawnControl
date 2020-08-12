@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -12,7 +13,9 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Random;
 
 public class TimeTrialActivity extends AppCompatActivity {
@@ -23,14 +26,18 @@ public class TimeTrialActivity extends AppCompatActivity {
     private TextView tvTimer;
     private TextView tvPickupTime;
     private ImageView ivItem;
-    private TextView tvRespawnTime;
-    private EditText etRespawnTime;
+    private TextView tvRespawnMinute;
+    private EditText etRespawnMinute;
+    private EditText etRespawnSecond;
 
     private ArrayList<ItemType> itemTypes;
     private Integer calculationNumber;
 
     private long startTime;
     private Boolean recheckInput;
+    private SimpleDateFormat timerFormatter = new SimpleDateFormat("m:ss.SS", Locale.ROOT);
+    private SimpleDateFormat pickupFormatter = new SimpleDateFormat("m:ss", Locale.ROOT);
+    private SimpleDateFormat respawnMinuteFormatter = new SimpleDateFormat("m", Locale.ROOT);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,15 +49,28 @@ public class TimeTrialActivity extends AppCompatActivity {
         tvTimer = (TextView) findViewById(R.id.tvTimer);
         tvPickupTime = (TextView) findViewById(R.id.tvPickupTime);
         ivItem = (ImageView) findViewById(R.id.ivItem);
-        tvRespawnTime = (TextView) findViewById(R.id.tvRespawnTime);
-        etRespawnTime = (EditText) findViewById(R.id.etRespawnTime);
+        tvRespawnMinute = (TextView) findViewById(R.id.tvRespawnMinute);
+        etRespawnMinute = (EditText) findViewById(R.id.etRespawnMinute);
+        etRespawnSecond = (EditText) findViewById(R.id.etRespawnSecond);
 
-        etRespawnTime.setPressed(true);
-        etRespawnTime.addTextChangedListener(new TextWatcher() {
+        etRespawnSecond.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
                 if(s.length() >= 2) {
                     recheckInput = false;
+                }
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
+
+        etRespawnMinute.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.length() >= 2) {
+                    etRespawnSecond.requestFocus();
                 }
             }
             @Override
@@ -68,8 +88,8 @@ public class TimeTrialActivity extends AppCompatActivity {
 
     private void startTimeTrial() {
         ArrayList<Item> itemsToDisplay = new ArrayList<>();
-        ArrayList<Integer> pickupSeconds = new ArrayList<>();
-        ArrayList<Integer> respawnSeconds = new ArrayList<>();
+        ArrayList<Long> pickupMoments = new ArrayList<>();
+        ArrayList<Long> respawnMoments = new ArrayList<>();
         for(int i = 0; i < calculationNumber; i++) {
             // Select random item type and item
             ItemType randomItemType = itemTypes.get(random.nextInt(itemTypes.size()));
@@ -77,67 +97,83 @@ public class TimeTrialActivity extends AppCompatActivity {
             Item randomItem = items.get(random.nextInt(items.size()));
             itemsToDisplay.add(randomItem);
 
-            // Create random time (0-59) for pickup
-            Integer randomPickupSecond = random.nextInt(60);
-            pickupSeconds.add(randomPickupSecond);
+            // Create random time for pickup in milliseconds
+            long respawnTime = randomItem.getRespawnTimeInSeconds() * 1000;
+            long randomPickupMoment = random.nextInt(780) * 1000;
+            pickupMoments.add(randomPickupMoment);
 
             // Calculate time for respawn (solution)
-            respawnSeconds.add((randomPickupSecond + randomItem.getRespawnTimeInSeconds()) % 60);
+            long respawnMoment = randomPickupMoment + respawnTime;
+            respawnMoments.add(respawnMoment);
         }
 
         // Run tests
-        startTime = SystemClock.elapsedRealtime();
-        TestRunner testRunner = new TestRunner(itemsToDisplay, pickupSeconds, respawnSeconds);
+        TestRunner testRunner = new TestRunner(itemsToDisplay, pickupMoments, respawnMoments);
         Thread testThread = new Thread(testRunner);
         testThread.start();
     }
 
     private class TestRunner implements Runnable {
         private ArrayList<Item> itemsToDisplay;
-        private ArrayList<Integer> pickupSeconds, respawnSeconds;
+        private ArrayList<Long> pickupMoments, respawnMoments;
 
         private long lastTimerUpdate;
 
-        TestRunner(ArrayList<Item> itemsToDisplay, ArrayList<Integer> pickupSeconds, ArrayList<Integer> respawnSeconds) {
+        TestRunner(ArrayList<Item> itemsToDisplay, ArrayList<Long> pickupMoments, ArrayList<Long> respawnMoments) {
             this.itemsToDisplay = itemsToDisplay;
-            this.pickupSeconds = pickupSeconds;
-            this.respawnSeconds = respawnSeconds;
+            this.pickupMoments = pickupMoments;
+            this.respawnMoments = respawnMoments;
         }
 
         @Override
         public void run() {
+            startTime = SystemClock.elapsedRealtime();
             for(int i = 0; i < itemsToDisplay.size(); i++) {
                 recheckInput = true;
-                Boolean correct = displayItem(itemsToDisplay.get(i), pickupSeconds.get(i), respawnSeconds.get(i));
+                Boolean correct  = displayItem(itemsToDisplay.get(i), pickupMoments.get(i), respawnMoments.get(i));
 
-                if(!correct) {
+                if(correct) {
+                    
+                } else {
                     return;
                 }
             }
         }
 
-        private Boolean displayItem(Item item, Integer pickupSecond, Integer respawnSecond) {
-            setPickupTime("X:" + (pickupSecond < 10 ? "0" + pickupSecond : pickupSecond));
-            setRespawnTime("X:");
-            setEditTextValue("");
+        private Boolean displayItem(Item item, Long pickupMoment, Long respawnMoment) {
+            boolean minuteInputRequired = item.getRespawnTimeInSeconds() > 60;
+
+            setEtRespawnSecond("");
+            setPickupTime(pickupMoment);
+            if(minuteInputRequired) {
+                setMinuteInput(true);
+                setEtRespawnMinute("");
+                setTvRespawnMinute("00");   // Needed for spacing
+            } else {
+                setMinuteInput(false);
+                setTvRespawnMinute(respawnMoment);
+            }
+
             setItemImage(item.getImageResourceId());
 
-            while(recheckInput) {
+            do {
                 final long currentTime = SystemClock.elapsedRealtime();
-                if((currentTime - lastTimerUpdate) / 1000 >= 1) {
+                if((currentTime - lastTimerUpdate) / 10 >= 1) {
                     updateTimer(currentTime);
                     lastTimerUpdate = currentTime;
                 }
-            }
-            final long currentTime = SystemClock.elapsedRealtime();
-            if((currentTime - lastTimerUpdate) / 1000 >= 1) {
-                updateTimer(currentTime);
-                lastTimerUpdate = currentTime;
+            } while(recheckInput);
+
+            boolean correct;
+
+            String secondInput = etRespawnSecond.getText().toString();
+            if(minuteInputRequired) {
+                String minuteInput = etRespawnMinute.getText().toString();
+                correct = (Long.parseLong(minuteInput) * 60000 + Long.parseLong(secondInput) * 1000) == respawnMoment;
+            } else {
+                correct = Long.parseLong(secondInput) * 1000 == respawnMoment % 60000;
             }
 
-            String input = etRespawnTime.getText().toString();
-
-            boolean correct = Integer.parseInt(input) == respawnSecond;
             if(correct) {
                 return true;
             } else {
@@ -148,8 +184,8 @@ public class TimeTrialActivity extends AppCompatActivity {
     }
 
     private void updateTimer(long currentTime) {
-        long elapsedSeconds = (currentTime - startTime) / 1000;
-        setTimerText(String.valueOf(elapsedSeconds));
+        long elapsedTime = (currentTime - startTime);
+        setTimerText(timerFormatter.format(elapsedTime));
     }
 
     private void setTimerText(final String text) {
@@ -161,29 +197,42 @@ public class TimeTrialActivity extends AppCompatActivity {
         });
     }
 
-    private void setPickupTime(final String text) {
+    private void setPickupTime(final Long time) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                tvPickupTime.setText(text);
+                tvPickupTime.setText(pickupFormatter.format(time));
             }
         });
     }
 
-    private void setRespawnTime(final String text) {
+    private void setTvRespawnMinute(final Long time) {
+        setTvRespawnMinute(respawnMinuteFormatter.format(time));
+    }
+
+    private void setTvRespawnMinute(final String text) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                tvRespawnTime.setText(text);
+                tvRespawnMinute.setText(text);
             }
         });
     }
 
-    private void setEditTextValue(final String text) {
+    private void setEtRespawnMinute(final String text) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                etRespawnTime.setText(text);
+                etRespawnMinute.setText(text);
+            }
+        });
+    }
+
+    private void setEtRespawnSecond(final String text) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                etRespawnSecond.setText(text);
             }
         });
     }
@@ -196,4 +245,24 @@ public class TimeTrialActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void setMinuteInput(final Boolean minuteInputRequired) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                etRespawnMinute.setEnabled(minuteInputRequired);
+                etRespawnMinute.setVisibility(minuteInputRequired ? View.VISIBLE : View.INVISIBLE);
+
+                tvRespawnMinute.setEnabled(!minuteInputRequired);
+                tvRespawnMinute.setVisibility(!minuteInputRequired ? View.VISIBLE : View.INVISIBLE);
+
+                if(minuteInputRequired) {
+                    etRespawnMinute.requestFocus();
+                } else {
+                    etRespawnSecond.requestFocus();
+                }
+            }
+        });
+    }
+
 }

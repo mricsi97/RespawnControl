@@ -81,12 +81,13 @@
             android:layout_height="match_parent"
             android:text="@string/custom_amount"
             android:gravity="center"
-            android:textSize="22sp"
+            android:textSize="20sp"
             android:textColor="@android:color/white"/>
         <EditText
             android:id="@+id/etCustomTrial"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textSize="20sp"
             android:textColor="@android:color/white"
             android:backgroundTint="@android:color/white"/>
     </LinearLayout>
