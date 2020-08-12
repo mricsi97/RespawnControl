@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutTimeTrialDialog"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/colorPrimaryDark"
+    android:padding="15dp">
+
+    <TextView
+        android:id="@+id/tvItemType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/what_types_of_items"
+        android:textColor="@android:color/white"
+        android:textSize="22sp"
+        android:layout_marginBottom="10dp"/>
+
+    <GridLayout
+        android:id="@+id/checkboxGridTimeTrial"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:useDefaultMargins="true"
+        android:columnCount="2">
+    </GridLayout>
+
+    <TextView
+        android:id="@+id/tvCalcNum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/how_many_calculations"
+        android:textColor="@android:color/white"
+        android:textSize="22sp"
+        android:layout_marginVertical="10dp"/>
+
+    <RadioGroup
+        android:id="@+id/rgCalcNum"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RadioButton
+            android:id="@+id/rbThirty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="@android:color/white"
+            android:textColor="@android:color/white"
+            android:text="@string/thirty"
+            android:textSize="20sp" />
+        <RadioButton
+            android:id="@+id/rbFifty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="@android:color/white"
+            android:textColor="@android:color/white"
+            android:text="@string/fifty"
+            android:textSize="20sp" />
+        <RadioButton
+            android:id="@+id/rbHundred"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="@android:color/white"
+            android:textColor="@android:color/white"
+            android:text="@string/hundred"
+            android:textSize="20sp" />
+        <RadioButton
+            android:id="@+id/rbCustom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="@android:color/white"
+            android:textColor="@android:color/white"
+            android:text="@string/custom"
+            android:textSize="20sp" />
+    </RadioGroup>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/custom_amount"
+            android:gravity="center"
+            android:textSize="22sp"
+            android:textColor="@android:color/white"/>
+        <EditText
+            android:id="@+id/etCustomTrial"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@android:color/white"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnTrialOk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/OK"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/round_button"
+        android:textSize="22sp"
+        android:textColor="@android:color/white"/>
+
+</LinearLayout>

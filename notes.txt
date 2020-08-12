@@ -1,0 +1,10 @@
+1. activity:
+- mód kiválasztása: A) time trial
+					B) időre beírni, meddig sikerül elmenni
+
+A/1. activity:				
+- time trial: választani hányat adjon (30, 50, 100 leaderboardosak vagy saját szám leaderboard nélkül)
+
+
+
+B/1. activity:
