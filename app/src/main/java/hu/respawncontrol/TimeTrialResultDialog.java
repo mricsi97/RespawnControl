@@ -1,10 +1,15 @@
 package hu.respawncontrol;
 
+import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -31,11 +36,14 @@ public class TimeTrialResultDialog extends DialogFragment {
 
     private SimpleDateFormat timeFormatter = new SimpleDateFormat("ss.SS", Locale.ROOT);
 
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_time_trial_result, container, false);
+
+        if(getDialog() != null && getDialog().getWindow() != null) {
+            getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
 
         Bundle bundle = getArguments();
         if(bundle == null) {
@@ -70,9 +78,6 @@ public class TimeTrialResultDialog extends DialogFragment {
             results.add(result);
         }
 
-        final TextView tvAverageTime = (TextView) view.findViewById(R.id.tvAverageTime);
-        tvAverageTime.setText(timeFormatter.format(averageSolveTime));
-
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerResult);
 
         layoutManager = new LinearLayoutManager(view.getContext());
@@ -80,6 +85,18 @@ public class TimeTrialResultDialog extends DialogFragment {
 
         adapter = new ResultAdapter(results);
         recyclerView.setAdapter(adapter);
+
+        final TextView tvAverageTime = (TextView) view.findViewById(R.id.tvAverageTime);
+        tvAverageTime.setText(timeFormatter.format(averageSolveTime));
+
+        final ImageButton btnReplay = (ImageButton) view.findViewById(R.id.btnReplay_result);
+        btnReplay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((TimeTrialActivity)getActivity()).restartTimeTrial();
+                dismiss();
+            }
+        });
 
         return view;
     }

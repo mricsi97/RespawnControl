@@ -4,12 +4,22 @@
     android:layout_width="wrap_content"
     android:layout_height="40dp"
     android:orientation="horizontal"
-    android:layout_margin="10dp">
+    android:layout_margin="10dp"
+    >
+
+    <TextView
+        android:id="@+id/tvTestNumber"
+        android:layout_width="50dp"
+        android:layout_height="match_parent"
+        android:text="1."
+        android:gravity="center"
+        android:textColor="@android:color/white"/>
 
     <TextView
         android:id="@+id/tvSolveTime"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:text="02.17"
         android:gravity="center"
         android:textColor="@android:color/white" />
 
@@ -17,12 +27,14 @@
         android:id="@+id/ivItem_result"
         android:layout_width="80dp"
         android:layout_height="match_parent"
+        android:src="@drawable/health_100"
         android:paddingVertical="5dp"/>
 
     <TextView
         android:id="@+id/tvItemName"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:text="Mega Health"
         android:gravity="center"
         android:textColor="@android:color/white" />
 

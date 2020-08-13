@@ -6,7 +6,9 @@ import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -36,6 +38,7 @@ public class TimeTrialActivity extends AppCompatActivity {
     private TextView tvRespawnMinute;
     private EditText etRespawnMinute;
     private EditText etRespawnSecond;
+    private ImageButton btnReplayHidden;
 
     private ArrayList<ItemType> itemTypes;
     private Integer calculationNumber;
@@ -47,6 +50,8 @@ public class TimeTrialActivity extends AppCompatActivity {
     private SimpleDateFormat respawnMinuteFormatter = new SimpleDateFormat("m", Locale.ROOT);
 
     boolean minuteHintEnabled;
+
+    private static Thread testThread;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,6 +67,7 @@ public class TimeTrialActivity extends AppCompatActivity {
         tvRespawnMinute = (TextView) findViewById(R.id.tvRespawnMinute);
         etRespawnMinute = (EditText) findViewById(R.id.etRespawnMinute);
         etRespawnSecond = (EditText) findViewById(R.id.etRespawnSecond);
+        btnReplayHidden = (ImageButton) findViewById(R.id.btnReplay_hidden);
 
         etRespawnSecond.addTextChangedListener(new TextWatcher() {
             @Override
@@ -87,6 +93,13 @@ public class TimeTrialActivity extends AppCompatActivity {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
+
+        btnReplayHidden.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                restartTimeTrial();
+            }
         });
 
         Intent intent = getIntent();
@@ -119,7 +132,7 @@ public class TimeTrialActivity extends AppCompatActivity {
 
         // Run tests
         TestRunner testRunner = new TestRunner(itemsToDisplay, pickupMoments, respawnMoments);
-        Thread testThread = new Thread(testRunner);
+        testThread = new Thread(testRunner);
         testThread.start();
     }
 
@@ -138,7 +151,6 @@ public class TimeTrialActivity extends AppCompatActivity {
 
         @Override
         public void run() {
-//            solveTimes = new ArrayList<>();
             solveTimes = new long[itemsToDisplay.size()];
             startTime = SystemClock.elapsedRealtime();
             for(int i = 0; i < itemsToDisplay.size(); i++) {
@@ -146,10 +158,9 @@ public class TimeTrialActivity extends AppCompatActivity {
                 Long solveTime = doTest(itemsToDisplay.get(i), pickupMoments.get(i), respawnMoments.get(i));
 
                 if(solveTime == -1L) {
-                    // TODO: lose
+                    displayGameOver();
                     return;
                 } else {
-//                    solveTimes.add(solveTime);
                     solveTimes[i] = solveTime;
                 }
             }
@@ -181,6 +192,9 @@ public class TimeTrialActivity extends AppCompatActivity {
 
             long elapsedTime = 0;
             do {
+                if(Thread.interrupted()) {
+                    return -1L;
+                }
                 final long currentTime = SystemClock.elapsedRealtime();
                 // Update only every 0.01 seconds (so the UI thread has time)
                 if((currentTime - lastTimerUpdate) / 10 >= 1) {
@@ -201,7 +215,6 @@ public class TimeTrialActivity extends AppCompatActivity {
             if(correct) {
                 return elapsedTime;
             } else {
-                setTimerText("WRONG!");
                 return -1L;
             }
         }
@@ -210,10 +223,55 @@ public class TimeTrialActivity extends AppCompatActivity {
             Bundle bundle = new Bundle();
             bundle.putParcelableArrayList(ITEMS_TESTED, itemsToDisplay);
             bundle.putLongArray(SOLVE_TIMES, solveTimes);
-            TimeTrialResultDialog resultDialog = new TimeTrialResultDialog();
+            TimeTrialResultDialog resultDialog = new TimeTrialResultDialog(/*this*/);
             resultDialog.setArguments(bundle);
             resultDialog.show(getSupportFragmentManager(), "TimeTrialResultDialog");
         }
+
+        private void displayGameOver() {
+            setTimerText("WRONG!");
+            hideKeyboard();
+            showReplayButton();
+        }
+    }
+
+    public void restartTimeTrial() {
+        testThread.interrupt();
+        try {
+            testThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        showKeyboard();
+        startTimeTrial();
+    }
+
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) this.getSystemService(INPUT_METHOD_SERVICE);
+        View view = this.getCurrentFocus();
+        if(view == null) {
+            view = new View(this);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    private void showKeyboard() {
+        InputMethodManager imm = (InputMethodManager) this.getSystemService(INPUT_METHOD_SERVICE);
+        View view = this.getCurrentFocus();
+        if(view == null) {
+            view = new View(this);
+        }
+        imm.showSoftInput(view, 0);
+    }
+
+    private void showReplayButton() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                btnReplayHidden.setActivated(true);
+                btnReplayHidden.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     private long updateTimer(long currentTime) {

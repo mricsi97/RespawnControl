@@ -44,6 +44,7 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ResultView
         Long solveTime = result.getSolveTime();
         Item item = result.getItem();
 
+        holder.tvTestNumber.setText((position+1) + ".");
         holder.tvSolveTime.setText(timeFormatter.format(solveTime));
 
         Resources res = holder.itemView.getContext().getResources();
@@ -60,6 +61,7 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ResultView
 
     public static class ResultViewHolder extends RecyclerView.ViewHolder {
 
+        private TextView tvTestNumber;
         private TextView tvSolveTime;
         private ImageView ivItem;
         private TextView tvItemName;
@@ -67,6 +69,7 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ResultView
         public ResultViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            tvTestNumber = (TextView) itemView.findViewById(R.id.tvTestNumber);
             tvSolveTime = (TextView) itemView.findViewById(R.id.tvSolveTime);
             ivItem = (ImageView) itemView.findViewById(R.id.ivItem_result);
             tvItemName = (TextView) itemView.findViewById(R.id.tvItemName);

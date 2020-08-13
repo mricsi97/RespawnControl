@@ -1,6 +1,8 @@
 package hu.respawncontrol;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,6 +41,10 @@ public class TimeTrialOptionsDialog extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.dialog_time_trial_options, container, false);
+
+        if(getDialog() != null && getDialog().getWindow() != null) {
+            getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
 
         final TextView tvItemType = view.findViewById(R.id.tvItemType);
         final GridLayout checkboxGrid = view.findViewById(R.id.checkboxGridTimeTrial);
