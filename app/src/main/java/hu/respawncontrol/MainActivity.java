@@ -7,21 +7,24 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements TimeTrialDialog.DialogFinishedListener {
+import hu.respawncontrol.data.Item;
+import hu.respawncontrol.data.ItemType;
+import hu.respawncontrol.settings.SettingsActivity;
+
+public class MainActivity extends AppCompatActivity implements TimeTrialOptionsDialog.DialogFinishedListener {
 
     private static final String TAG = "MainActivity";
-//    public static final String ITEM_TYPE_NAMES = "ITEM_TYPE_NAMES";
     public static final String ITEM_TYPES = "ITEM_TYPES";
     public static final String SELECTED_ITEM_TYPES = "SELECTED_ITEM_TYPES";
     public static final String CALCULATION_NUMBER = "CALCULATION_NUMBER";
 
     private ArrayList<ItemType> itemTypes;
-    private ArrayList<String> itemTypeNames;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,21 +32,26 @@ public class MainActivity extends AppCompatActivity implements TimeTrialDialog.D
         setContentView(R.layout.activity_main);
 
         createItems();
-//        itemTypeNames = new ArrayList<>();
-//        for(ItemType itemType : itemTypes) {
-//            itemTypeNames.add(itemType.getName());
-//        }
 
         final Button btnTimeTrial = (Button) findViewById(R.id.btnTimeTrial);
+        final ImageButton btnSettings = (ImageButton) findViewById(R.id.btnSettings);
+
         btnTimeTrial.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
-//                bundle.putStringArrayList(ITEM_TYPE_NAMES, itemTypeNames);
                 bundle.putParcelableArrayList(ITEM_TYPES, itemTypes);
-                TimeTrialDialog dialog = new TimeTrialDialog();
+                TimeTrialOptionsDialog dialog = new TimeTrialOptionsDialog();
                 dialog.setArguments(bundle);
-                dialog.show(getSupportFragmentManager(), "TimeTrialDialog");
+                dialog.show(getSupportFragmentManager(), "TimeTrialOptionsDialog");
+            }
+        });
+
+        btnSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -52,18 +60,6 @@ public class MainActivity extends AppCompatActivity implements TimeTrialDialog.D
     public void sendResult(ArrayList<ItemType> itemTypes, String calcNum) {
         startTimeTrial(itemTypes, Integer.parseInt(calcNum));
     }
-
-//    @Override
-//    public void sendResult(ArrayList<String> selectedItemTypeNames, String calcNum) {
-//        ArrayList<ItemType> selectedItemTypes = new ArrayList<>();
-//        for(int i = 0; i < selectedItemTypeNames.size(); i++) {
-//            ItemType itemType = itemTypes.get(i);
-//            if(itemType.getName().equals(selectedItemTypeNames.get(i))) {
-//                itemType.add(itemTypes.get(i));
-//            }
-//        }
-//        startTimeTrial(selectedItemTypes, calcNum);
-//    }
 
     private void createItems() {
         List<Item> redArmor = Arrays.asList(

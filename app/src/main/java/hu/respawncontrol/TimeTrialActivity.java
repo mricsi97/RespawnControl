@@ -12,13 +12,20 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Random;
 
+import hu.respawncontrol.data.Item;
+import hu.respawncontrol.data.ItemType;
+
 public class TimeTrialActivity extends AppCompatActivity {
+
+    public static final String ITEMS_TESTED = "ITEMS_TESTED";
+    public static final String SOLVE_TIMES = "SOLVE_TIMES";
 
     private static final String TAG = "TimeTrialActivity";
     private static Random random;
@@ -34,10 +41,12 @@ public class TimeTrialActivity extends AppCompatActivity {
     private Integer calculationNumber;
 
     private long startTime;
-    private Boolean recheckInput;
+    private Boolean isSecondInputLongerThanTwo;
     private SimpleDateFormat timerFormatter = new SimpleDateFormat("m:ss.SS", Locale.ROOT);
     private SimpleDateFormat pickupFormatter = new SimpleDateFormat("m:ss", Locale.ROOT);
     private SimpleDateFormat respawnMinuteFormatter = new SimpleDateFormat("m", Locale.ROOT);
+
+    boolean minuteHintEnabled;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,10 +54,11 @@ public class TimeTrialActivity extends AppCompatActivity {
         setContentView(R.layout.activity_time_trial);
 
         random = new Random();
+        minuteHintEnabled = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("time_trial_minute_hint", false);
 
         tvTimer = (TextView) findViewById(R.id.tvTimer);
         tvPickupTime = (TextView) findViewById(R.id.tvPickupTime);
-        ivItem = (ImageView) findViewById(R.id.ivItem);
+        ivItem = (ImageView) findViewById(R.id.ivItem_timeTrial);
         tvRespawnMinute = (TextView) findViewById(R.id.tvRespawnMinute);
         etRespawnMinute = (EditText) findViewById(R.id.etRespawnMinute);
         etRespawnSecond = (EditText) findViewById(R.id.etRespawnSecond);
@@ -57,7 +67,7 @@ public class TimeTrialActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 if(s.length() >= 2) {
-                    recheckInput = false;
+                    isSecondInputLongerThanTwo = true;
                 }
             }
             @Override
@@ -118,6 +128,7 @@ public class TimeTrialActivity extends AppCompatActivity {
         private ArrayList<Long> pickupMoments, respawnMoments;
 
         private long lastTimerUpdate;
+        private long[] solveTimes;
 
         TestRunner(ArrayList<Item> itemsToDisplay, ArrayList<Long> pickupMoments, ArrayList<Long> respawnMoments) {
             this.itemsToDisplay = itemsToDisplay;
@@ -127,22 +138,30 @@ public class TimeTrialActivity extends AppCompatActivity {
 
         @Override
         public void run() {
+//            solveTimes = new ArrayList<>();
+            solveTimes = new long[itemsToDisplay.size()];
             startTime = SystemClock.elapsedRealtime();
             for(int i = 0; i < itemsToDisplay.size(); i++) {
-                recheckInput = true;
-                Boolean correct  = displayItem(itemsToDisplay.get(i), pickupMoments.get(i), respawnMoments.get(i));
+                isSecondInputLongerThanTwo = false;
+                Long solveTime = doTest(itemsToDisplay.get(i), pickupMoments.get(i), respawnMoments.get(i));
 
-                if(correct) {
-                    
-                } else {
+                if(solveTime == -1L) {
+                    // TODO: lose
                     return;
+                } else {
+//                    solveTimes.add(solveTime);
+                    solveTimes[i] = solveTime;
                 }
             }
+
+            // TODO: saveResults();
+            displayResults();
         }
 
-        private Boolean displayItem(Item item, Long pickupMoment, Long respawnMoment) {
+        private Long doTest(Item item, Long pickupMoment, Long respawnMoment) {
             boolean minuteInputRequired = item.getRespawnTimeInSeconds() > 60;
 
+            // Display times, input fields and icon
             setEtRespawnSecond("");
             setPickupTime(pickupMoment);
             if(minuteInputRequired) {
@@ -151,21 +170,26 @@ public class TimeTrialActivity extends AppCompatActivity {
                 setTvRespawnMinute("00");   // Needed for spacing
             } else {
                 setMinuteInput(false);
-                setTvRespawnMinute(respawnMoment);
-            }
 
+                if(minuteHintEnabled) {
+                    setTvRespawnMinute(respawnMoment);
+                } else {
+                    setTvRespawnMinute("X");
+                }
+            }
             setItemImage(item.getImageResourceId());
 
+            long elapsedTime = 0;
             do {
                 final long currentTime = SystemClock.elapsedRealtime();
+                // Update only every 0.01 seconds (so the UI thread has time)
                 if((currentTime - lastTimerUpdate) / 10 >= 1) {
-                    updateTimer(currentTime);
+                    elapsedTime = updateTimer(currentTime);
                     lastTimerUpdate = currentTime;
                 }
-            } while(recheckInput);
+            } while(!isSecondInputLongerThanTwo);
 
             boolean correct;
-
             String secondInput = etRespawnSecond.getText().toString();
             if(minuteInputRequired) {
                 String minuteInput = etRespawnMinute.getText().toString();
@@ -175,17 +199,28 @@ public class TimeTrialActivity extends AppCompatActivity {
             }
 
             if(correct) {
-                return true;
+                return elapsedTime;
             } else {
                 setTimerText("WRONG!");
-                return false;
+                return -1L;
             }
+        }
+
+        private void displayResults() {
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList(ITEMS_TESTED, itemsToDisplay);
+            bundle.putLongArray(SOLVE_TIMES, solveTimes);
+            TimeTrialResultDialog resultDialog = new TimeTrialResultDialog();
+            resultDialog.setArguments(bundle);
+            resultDialog.show(getSupportFragmentManager(), "TimeTrialResultDialog");
         }
     }
 
-    private void updateTimer(long currentTime) {
+    private long updateTimer(long currentTime) {
         long elapsedTime = (currentTime - startTime);
         setTimerText(timerFormatter.format(elapsedTime));
+
+        return elapsedTime;
     }
 
     private void setTimerText(final String text) {

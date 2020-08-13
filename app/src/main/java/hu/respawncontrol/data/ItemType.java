@@ -1,4 +1,4 @@
-package hu.respawncontrol;
+package hu.respawncontrol.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;

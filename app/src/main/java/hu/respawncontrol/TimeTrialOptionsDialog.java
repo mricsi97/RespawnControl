@@ -21,16 +21,16 @@ import androidx.fragment.app.DialogFragment;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import hu.respawncontrol.data.ItemType;
 
-public class TimeTrialDialog extends DialogFragment {
+
+public class TimeTrialOptionsDialog extends DialogFragment {
 
     private static final String TAG = "TimeTrialDialog";
 
     public interface DialogFinishedListener {
-//        void sendResult(ArrayList<String> itemTypes, String calcNum);
         void sendResult(ArrayList<ItemType> itemTypes, String calcNum);
     }
     public DialogFinishedListener dialogFinishedListener;
@@ -38,7 +38,7 @@ public class TimeTrialDialog extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.dialog_time_trial, container, false);
+        final View view = inflater.inflate(R.layout.dialog_time_trial_options, container, false);
 
         final TextView tvItemType = view.findViewById(R.id.tvItemType);
         final GridLayout checkboxGrid = view.findViewById(R.id.checkboxGridTimeTrial);
@@ -48,37 +48,21 @@ public class TimeTrialDialog extends DialogFragment {
             Log.e(TAG, "No argument was passed to the dialog fragment.");
             return null;
         }
-//        ArrayList<String> itemTypeNames = bundle.getStringArrayList(MainActivity.ITEM_TYPE_NAMES);
+
         final ArrayList<ItemType> itemTypes = bundle.getParcelableArrayList(MainActivity.ITEM_TYPES);
-//        if(itemTypeNames == null) {
-//            Log.e(TAG, "Dialog did not receive valid item type names.");
-//            return null;
-//        }
         if(itemTypes == null) {
-            Log.e(TAG, "Dialog did not receive valid item types.");
+            Log.e(TAG, "Dialog did not receive valid item type list.");
             return null;
         }
 
         final List<CheckBox> checkboxes = new ArrayList<>();
-//        for(String name : itemTypeNames) {
-//            CheckBox checkBox = (CheckBox) LayoutInflater.from(getContext()).inflate(R.layout.checkbox_time_trial_dialog, checkboxGrid);
-//            checkBox.setText(name);
-//            checkboxes.add(checkBox);
-//        }
+
         for(ItemType itemType : itemTypes) {
             CheckBox checkBox = (CheckBox) LayoutInflater.from(getContext()).inflate(R.layout.checkbox_time_trial_dialog, checkboxGrid, false);
             checkBox.setText(itemType.getName());
             checkboxGrid.addView(checkBox);
             checkboxes.add(checkBox);
         }
-
-//        final List<CheckBox> checkboxes = Arrays.asList(
-//                (CheckBox) view.findViewById(R.id.cbMegaHealth),
-//                (CheckBox) view.findViewById(R.id.cbOtherHealth),
-//                (CheckBox) view.findViewById(R.id.cbRedArmor),
-//                (CheckBox) view.findViewById(R.id.cbOtherArmor),
-//                (CheckBox) view.findViewById(R.id.cbWeapons),
-//                (CheckBox) view.findViewById(R.id.cbPowerups));
 
         final TextView tvCalcNum = view.findViewById(R.id.tvCalcNum);
         final RadioGroup rgCalcNum = view.findViewById(R.id.rgCalcNum);
@@ -112,12 +96,6 @@ public class TimeTrialDialog extends DialogFragment {
                 }
                 tvCalcNum.setError(null);
 
-//                ArrayList<String> selectedItemTypes = new ArrayList<>();
-//                for(CheckBox checkBox : checkboxes) {
-//                    if(checkBox.isChecked()){
-//                        selectedItemTypes.add(checkBox.getText().toString());
-//                    }
-//                }
                 ArrayList<ItemType> selectedItemTypes = new ArrayList<>();
                 for(CheckBox checkBox : checkboxes) {
                     if(checkBox.isChecked()) {
