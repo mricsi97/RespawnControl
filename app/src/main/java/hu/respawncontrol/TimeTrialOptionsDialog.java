@@ -10,8 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.GridLayout;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -33,7 +35,7 @@ public class TimeTrialOptionsDialog extends DialogFragment {
     private static final String TAG = "TimeTrialDialog";
 
     public interface DialogFinishedListener {
-        void sendResult(ArrayList<ItemType> itemTypes, String calcNum);
+        void sendResult(ArrayList<ItemType> itemTypes, Integer testAmount);
     }
     public DialogFinishedListener dialogFinishedListener;
 
@@ -70,11 +72,23 @@ public class TimeTrialOptionsDialog extends DialogFragment {
             checkboxes.add(checkBox);
         }
 
-        final TextView tvCalcNum = view.findViewById(R.id.tvCalcNum);
-        final RadioGroup rgCalcNum = view.findViewById(R.id.rgCalcNum);
+        final TextView tvTestAmount = view.findViewById(R.id.tvTestAmount);
+        final RadioGroup rgTestAmount = view.findViewById(R.id.rgTestAmount);
+
+        final RadioButton rbCustom = view.findViewById(R.id.rbCustom);
+        rbCustom.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                final LinearLayout customNumberLayout = (LinearLayout) view.findViewById(R.id.customNumberLayout);
+                if(isChecked) {
+                    customNumberLayout.setVisibility(View.VISIBLE);
+                } else {
+                    customNumberLayout.setVisibility(View.GONE);
+                }
+            }
+        });
 
         final Button btnTrialOk = view.findViewById(R.id.btnTrialOk);
-
         btnTrialOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,13 +108,13 @@ public class TimeTrialOptionsDialog extends DialogFragment {
                 tvItemType.setError(null);
 
                 // Make sure a radio button is checked
-                int buttonId = rgCalcNum.getCheckedRadioButtonId();
+                int buttonId = rgTestAmount.getCheckedRadioButtonId();
                 if(buttonId == -1) {
                     Snackbar.make(view, "Please select the desired amount of calculations.", Snackbar.LENGTH_LONG).show();
-                    tvCalcNum.setError("");
+                    tvTestAmount.setError("");
                     return;
                 }
-                tvCalcNum.setError(null);
+                tvTestAmount.setError(null);
 
                 ArrayList<ItemType> selectedItemTypes = new ArrayList<>();
                 for(CheckBox checkBox : checkboxes) {
@@ -111,13 +125,24 @@ public class TimeTrialOptionsDialog extends DialogFragment {
                 }
 
                 final RadioButton selectedButton = view.findViewById(buttonId);
-                String calcNumText = selectedButton.getText().toString();
-                if(calcNumText.equals("Custom")) {
+                String buttonText = selectedButton.getText().toString();
+
+                int testAmount;
+                if(buttonText.equals("Custom")){
                     final EditText etCustomTrial = view.findViewById(R.id.etCustomTrial);
-                    calcNumText = etCustomTrial.getText().toString();
+
+                    testAmount = Integer.parseInt(etCustomTrial.getText().toString());
+                    if(testAmount < 1) {
+                        Snackbar.make(view, "Please enter a valid amount.", Snackbar.LENGTH_LONG).show();
+                        tvTestAmount.setError("");
+                        return;
+                    }
+                    tvTestAmount.setError(null);
+                } else {
+                    testAmount = Integer.parseInt(buttonText);
                 }
 
-                dialogFinishedListener.sendResult(selectedItemTypes, calcNumText);
+                dialogFinishedListener.sendResult(selectedItemTypes, testAmount);
                 getDialog().dismiss();
             }
         });

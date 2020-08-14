@@ -4,9 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -24,7 +22,7 @@ public class MainActivity extends AppCompatActivity implements TimeTrialOptionsD
     private static final String TAG = "MainActivity";
     public static final String ITEM_TYPES = "ITEM_TYPES";
     public static final String SELECTED_ITEM_TYPES = "SELECTED_ITEM_TYPES";
-    public static final String CALCULATION_NUMBER = "CALCULATION_NUMBER";
+    public static final String TEST_AMOUNT = "TEST_AMOUNT";
 
     private ArrayList<ItemType> itemTypes;
 
@@ -81,45 +79,42 @@ public class MainActivity extends AppCompatActivity implements TimeTrialOptionsD
     }
 
     @Override
-    public void sendResult(ArrayList<ItemType> itemTypes, String calcNum) {
-        startTimeTrial(itemTypes, Integer.parseInt(calcNum));
+    public void sendResult(ArrayList<ItemType> itemTypes, Integer testAmount) {
+        startTimeTrial(itemTypes, testAmount);
     }
 
     private void createItems() {
         List<Item> redArmor = Arrays.asList(
-                new Item("Red Armor", R.drawable.armor_100, 25));
+                new Item("Red Armor", R.drawable.armor_100, Arrays.asList(R.raw.armort4), 25));
 
         List<Item> otherArmors = Arrays.asList(
-                new Item("Armor Shard", R.drawable.armor_5, 25),
-                new Item("Blue Armor", R.drawable.armor_50, 25),
-                new Item("Yellow Armor", R.drawable.armor_75, 25));
+                new Item("Armor Shard", R.drawable.armor_5, Arrays.asList(R.raw.armort1), 25),
+                new Item("Blue Armor", R.drawable.armor_50, Arrays.asList(R.raw.armort2), 25),
+                new Item("Yellow Armor", R.drawable.armor_75, Arrays.asList(R.raw.armort3), 25));
 
         List<Item> megaHealth = Arrays.asList(
-                new Item("Mega Health", R.drawable.health_100, 35));
+                new Item("Mega Health", R.drawable.health_100, Arrays.asList(R.raw.hpt3), 35));
 
         List<Item> otherHealths = Arrays.asList(
-                new Item("Bubble Health", R.drawable.health_5, 20),
-                new Item("25 Health", R.drawable.health_25, 20),
-                new Item("50 Health", R.drawable.health_50, 20));
+                new Item("Bubble Health", R.drawable.health_5, Arrays.asList(R.raw.hpt0), 20),
+                new Item("25 Health", R.drawable.health_25, Arrays.asList(R.raw.hpt1), 20),
+                new Item("50 Health", R.drawable.health_50, Arrays.asList(R.raw.hpt2), 20));
 
         List<Item> weapons = Arrays.asList(
-                new Item("Machine Gun", R.drawable.machine_gun, 5),
-                new Item("Blaster", R.drawable.blaster, 5),
-                new Item("Super Shotgun", R.drawable.shotgun, 5),
-                new Item("Rocket Launcher", R.drawable.rocket_launcher, 5),
-                new Item("Shaft", R.drawable.shaft, 5),
-                new Item("Crossbow", R.drawable.crossbow, 5),
-                new Item("Pincer", R.drawable.pincer,5),
-                new Item("Grenade Launcher", R.drawable.grenade_launcher, 5));
-
-        Log.i(TAG, String.valueOf(R.drawable.pincer));
-        Log.i(TAG, String.valueOf(weapons.get(6).getImageResourceId()));
+                new Item("Machine Gun", R.drawable.machine_gun, Arrays.asList(R.raw.weaponmac), 5),
+                new Item("Blaster", R.drawable.blaster, Arrays.asList(R.raw.weaponbl), 5),
+                new Item("Super Shotgun", R.drawable.shotgun, Arrays.asList(R.raw.weaponss), 5),
+                new Item("Rocket Launcher", R.drawable.rocket_launcher, Arrays.asList(R.raw.weaponrl), 5),
+                new Item("Shaft", R.drawable.shaft, Arrays.asList(R.raw.weaponshaft), 5),
+                new Item("Crossbow", R.drawable.crossbow, Arrays.asList(R.raw.weaponcb), 5),
+                new Item("Pincer", R.drawable.pincer, Arrays.asList(R.raw.weaponpncr), 5),
+                new Item("Grenade Launcher", R.drawable.grenade_launcher, Arrays.asList(R.raw.weapongl), 5));
 
         List<Item> powerups = Arrays.asList(
-                new Item("Siphonator", R.drawable.siphonator, 120),
-                new Item("Vanguard", R.drawable.vanguard, 120),
-                new Item("Vindicator", R.drawable.vindicator, 120),
-                new Item("Diabotical", R.drawable.diabotical, 240));
+                new Item("Siphonator", R.drawable.siphonator, Arrays.asList(R.raw.powerup_siphonator, R.raw.announcer_common_powerup_siphonator_pickup), 120),
+                new Item("Vanguard", R.drawable.vanguard, Arrays.asList(R.raw.powerup_vanguard, R.raw.announcer_common_powerup_vg_pickup), 120),
+                new Item("Vindicator", R.drawable.vindicator, Arrays.asList(R.raw.powerup, R.raw.announcer_common_powerup_td_pickup), 120),
+                new Item("Diabotical", R.drawable.diabotical, Arrays.asList(R.raw.powerup, R.raw.announcer_common_powerup_db_pickup), 240));
 
         itemTypes = new ArrayList<>(Arrays.asList(
                 new ItemType("Red Armor", redArmor),
@@ -131,10 +126,10 @@ public class MainActivity extends AppCompatActivity implements TimeTrialOptionsD
         ));
     }
 
-    private void startTimeTrial(ArrayList<ItemType> itemTypes, Integer calcNum) {
+    private void startTimeTrial(ArrayList<ItemType> itemTypes, Integer testAmount) {
         Intent intent = new Intent(MainActivity.this, TimeTrialActivity.class);
         intent.putParcelableArrayListExtra(SELECTED_ITEM_TYPES, itemTypes);
-        intent.putExtra(CALCULATION_NUMBER, calcNum);
+        intent.putExtra(TEST_AMOUNT, testAmount);
         startActivity(intent);
     }
 }

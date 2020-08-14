@@ -3,28 +3,36 @@ package hu.respawncontrol.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Item implements Parcelable {
     private String name;
     private Integer imageResourceId;
+    private List<Integer> soundResourceIds;
     private Integer respawnTimeInSeconds;
 
-    public Item(String name, Integer imageResourceId, Integer respawnTimeInSeconds) {
+    public Item(String name, Integer imageResourceId, List<Integer> soundResourceIds, Integer respawnTimeInSeconds) {
         this.name = name;
         this.imageResourceId = imageResourceId;
+        this.soundResourceIds = soundResourceIds;
         this.respawnTimeInSeconds = respawnTimeInSeconds;
-
     }
 
     public String getName() {
         return name;
     }
 
-    public Integer getRespawnTimeInSeconds() {
-        return respawnTimeInSeconds;
-    }
-
     public Integer getImageResourceId() {
         return imageResourceId;
+    }
+
+    public List<Integer> getSoundResourceIds() {
+        return soundResourceIds;
+    }
+
+    public Integer getRespawnTimeInSeconds() {
+        return respawnTimeInSeconds;
     }
 
     ////////////////
@@ -33,8 +41,14 @@ public class Item implements Parcelable {
 
     protected Item(Parcel in) {
         name = in.readString();
-        respawnTimeInSeconds = in.readByte() == 0x00 ? null : in.readInt();
         imageResourceId = in.readByte() == 0x00 ? null : in.readInt();
+        if (in.readByte() == 0x01) {
+            soundResourceIds = new ArrayList<Integer>();
+            in.readList(soundResourceIds, Integer.class.getClassLoader());
+        } else {
+            soundResourceIds = null;
+        }
+        respawnTimeInSeconds = in.readByte() == 0x00 ? null : in.readInt();
     }
 
     @Override
@@ -45,17 +59,23 @@ public class Item implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
-        if (respawnTimeInSeconds == null) {
-            dest.writeByte((byte) (0x00));
-        } else {
-            dest.writeByte((byte) (0x01));
-            dest.writeInt(respawnTimeInSeconds);
-        }
         if (imageResourceId == null) {
             dest.writeByte((byte) (0x00));
         } else {
             dest.writeByte((byte) (0x01));
             dest.writeInt(imageResourceId);
+        }
+        if (soundResourceIds == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(soundResourceIds);
+        }
+        if (respawnTimeInSeconds == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(respawnTimeInSeconds);
         }
     }
 

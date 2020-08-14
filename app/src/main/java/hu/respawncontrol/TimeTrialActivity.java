@@ -1,6 +1,10 @@
 package hu.respawncontrol;
 
 import android.content.Intent;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.SoundPool;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.Editable;
@@ -18,6 +22,7 @@ import androidx.preference.PreferenceManager;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Random;
 
@@ -32,16 +37,22 @@ public class TimeTrialActivity extends AppCompatActivity {
     private static final String TAG = "TimeTrialActivity";
     private static Random random;
 
+    private TextView tvCountdown;
+    private TextView tvTestProgress;
+    private ImageButton btnReplayTopRight;
     private TextView tvTimer;
+    private TextView tvPickup;
     private TextView tvPickupTime;
     private ImageView ivItem;
+    private TextView tvRespawn;
     private TextView tvRespawnMinute;
     private EditText etRespawnMinute;
+    private TextView tvSeparator;
     private EditText etRespawnSecond;
     private ImageButton btnReplayHidden;
 
     private ArrayList<ItemType> itemTypes;
-    private Integer calculationNumber;
+    private Integer testAmount;
 
     private long startTime;
     private Boolean isSecondInputLongerThanTwo;
@@ -53,33 +64,49 @@ public class TimeTrialActivity extends AppCompatActivity {
 
     private static Thread testThread;
 
+    private SoundPool soundPool;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_time_trial);
 
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_GAME)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
+                    .build();
+
+            soundPool = new SoundPool.Builder()
+                    .setMaxStreams(3)
+                    .setAudioAttributes(audioAttributes)
+                    .build();
+        } else {
+            soundPool = new SoundPool(3, AudioManager.STREAM_MUSIC, 0);
+        }
+
         random = new Random();
         minuteHintEnabled = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("time_trial_minute_hint", false);
 
+        tvCountdown = (TextView) findViewById(R.id.tvCountdown);
+        tvTestProgress = (TextView) findViewById(R.id.tvTestProgress);
+        btnReplayTopRight = (ImageButton) findViewById(R.id.btnReplay_topRight);
         tvTimer = (TextView) findViewById(R.id.tvTimer);
+        tvPickup = (TextView) findViewById(R.id.tvPickup);
         tvPickupTime = (TextView) findViewById(R.id.tvPickupTime);
         ivItem = (ImageView) findViewById(R.id.ivItem_timeTrial);
+        tvRespawn = (TextView) findViewById(R.id.tvRespawn);
         tvRespawnMinute = (TextView) findViewById(R.id.tvRespawnMinute);
         etRespawnMinute = (EditText) findViewById(R.id.etRespawnMinute);
+        tvSeparator = (TextView) findViewById(R.id.tvSeparator);
         etRespawnSecond = (EditText) findViewById(R.id.etRespawnSecond);
         btnReplayHidden = (ImageButton) findViewById(R.id.btnReplay_hidden);
 
-        etRespawnSecond.addTextChangedListener(new TextWatcher() {
+        btnReplayTopRight.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void afterTextChanged(Editable s) {
-                if(s.length() >= 2) {
-                    isSecondInputLongerThanTwo = true;
-                }
+            public void onClick(View v) {
+                restartTimeTrial();
             }
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
         });
 
         etRespawnMinute.addTextChangedListener(new TextWatcher() {
@@ -95,6 +122,20 @@ public class TimeTrialActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
         });
 
+        etRespawnSecond.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.length() >= 2) {
+                    isSecondInputLongerThanTwo = true;
+                }
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
+
+
         btnReplayHidden.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,7 +145,7 @@ public class TimeTrialActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         itemTypes = intent.getParcelableArrayListExtra(MainActivity.SELECTED_ITEM_TYPES);
-        calculationNumber = intent.getIntExtra(MainActivity.CALCULATION_NUMBER, -1);
+        testAmount = intent.getIntExtra(MainActivity.TEST_AMOUNT, -1);
 
         startTimeTrial();
     }
@@ -120,6 +161,7 @@ public class TimeTrialActivity extends AppCompatActivity {
         }
     }
 
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -132,10 +174,12 @@ public class TimeTrialActivity extends AppCompatActivity {
     }
 
     private void startTimeTrial() {
+        showBigReplayButton(false);
+
         ArrayList<Item> itemsToDisplay = new ArrayList<>();
         ArrayList<Long> pickupMoments = new ArrayList<>();
         ArrayList<Long> respawnMoments = new ArrayList<>();
-        for(int i = 0; i < calculationNumber; i++) {
+        for(int i = 0; i < testAmount; i++) {
             // Select random item type and item
             ItemType randomItemType = itemTypes.get(random.nextInt(itemTypes.size()));
             ArrayList<Item> items = (ArrayList<Item>) randomItemType.getItems();
@@ -152,35 +196,60 @@ public class TimeTrialActivity extends AppCompatActivity {
             respawnMoments.add(respawnMoment);
         }
 
+        // Load sounds for all items
+        HashMap<String, ArrayList<Integer>> soundIdLists = new HashMap<>();
+        for(Item item : itemsToDisplay) {
+            String itemName = item.getName();
+
+            if(soundIdLists.containsKey(itemName)){
+                continue;
+            }
+
+            ArrayList<Integer> soundResourceIds = (ArrayList<Integer>) item.getSoundResourceIds();
+            ArrayList<Integer> soundIdList = new ArrayList<>();
+            for(Integer resourceId : soundResourceIds) {
+                Integer soundId = soundPool.load(this, resourceId, 1);
+                soundIdList.add(soundId);
+            }
+
+            soundIdLists.put(itemName, soundIdList);
+        }
+
         // Run tests
-        TestRunner testRunner = new TestRunner(itemsToDisplay, pickupMoments, respawnMoments);
+        TestRunner testRunner = new TestRunner(itemsToDisplay, soundIdLists, pickupMoments, respawnMoments);
         testThread = new Thread(testRunner);
         testThread.start();
     }
 
     private class TestRunner implements Runnable {
         private ArrayList<Item> itemsToDisplay;
+        private HashMap<String, ArrayList<Integer>> soundIdLists;
         private ArrayList<Long> pickupMoments, respawnMoments;
 
         private long lastTimerUpdate;
         private long[] solveTimes;
 
-        TestRunner(ArrayList<Item> itemsToDisplay, ArrayList<Long> pickupMoments, ArrayList<Long> respawnMoments) {
+        TestRunner(ArrayList<Item> itemsToDisplay, HashMap<String, ArrayList<Integer>> soundIdLists, ArrayList<Long> pickupMoments, ArrayList<Long> respawnMoments) {
             this.itemsToDisplay = itemsToDisplay;
+            this.soundIdLists = soundIdLists;
             this.pickupMoments = pickupMoments;
             this.respawnMoments = respawnMoments;
         }
 
         @Override
         public void run() {
+            doCountdown(3);
+
             solveTimes = new long[itemsToDisplay.size()];
             startTime = SystemClock.elapsedRealtime();
             for(int i = 0; i < itemsToDisplay.size(); i++) {
                 isSecondInputLongerThanTwo = false;
-                Long solveTime = doTest(itemsToDisplay.get(i), pickupMoments.get(i), respawnMoments.get(i));
+                Long solveTime = doTest(i, itemsToDisplay.get(i), pickupMoments.get(i), respawnMoments.get(i));
 
-                if(solveTime == -1L) {
+                if(solveTime == -1L) { // Wrong solution
                     displayGameOver();
+                    return;
+                } else if(solveTime == -2L) { // Thread interrupted (~ game restarted)
                     return;
                 } else {
                     solveTimes[i] = solveTime;
@@ -191,10 +260,29 @@ public class TimeTrialActivity extends AppCompatActivity {
             displayResults();
         }
 
-        private Long doTest(Item item, Long pickupMoment, Long respawnMoment) {
+        private void doCountdown(int countDownSeconds) {
+            showUI(false);
+            showTvCountdown(true);
+
+            while(countDownSeconds > 0) {
+                setCountdownText(String.valueOf(countDownSeconds));
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                countDownSeconds--;
+            }
+
+            showTvCountdown(false);
+            showUI(true);
+        }
+
+        private Long doTest(int progress, Item item, Long pickupMoment, Long respawnMoment) {
             boolean minuteInputRequired = item.getRespawnTimeInSeconds() > 60;
 
             // Display times, input fields and icon
+            setTvTestProgress(progress, itemsToDisplay.size());
             setEtRespawnSecond("");
             setPickupTime(pickupMoment);
             if(minuteInputRequired) {
@@ -212,10 +300,18 @@ public class TimeTrialActivity extends AppCompatActivity {
             }
             setItemImage(item.getImageResourceId());
 
+            // Play sounds for the item
+            ArrayList<Integer> soundIds = soundIdLists.get(item.getName());
+            if(soundIds != null) {
+                for(Integer soundId : soundIds) {
+                    soundPool.play(soundId, 1, 1, 0, 0, 1);
+                }
+            }
+
             long elapsedTime = 0;
             do {
                 if(Thread.interrupted()) {
-                    return -1L;
+                    return -2L;
                 }
                 final long currentTime = SystemClock.elapsedRealtime();
                 // Update only every 0.01 seconds (so the UI thread has time)
@@ -227,11 +323,15 @@ public class TimeTrialActivity extends AppCompatActivity {
 
             boolean correct;
             String secondInput = etRespawnSecond.getText().toString();
-            if(minuteInputRequired) {
-                String minuteInput = etRespawnMinute.getText().toString();
-                correct = (Long.parseLong(minuteInput) * 60000 + Long.parseLong(secondInput) * 1000) == respawnMoment;
-            } else {
-                correct = Long.parseLong(secondInput) * 1000 == respawnMoment % 60000;
+            try {
+                if (minuteInputRequired) {
+                    String minuteInput = etRespawnMinute.getText().toString();
+                    correct = (Long.parseLong(minuteInput) * 60000 + Long.parseLong(secondInput) * 1000) == respawnMoment;
+                } else {
+                    correct = Long.parseLong(secondInput) * 1000 == respawnMoment % 60000;
+                }
+            } catch (NumberFormatException e) { // If input was not a number (could not be parsed)
+                correct = false;
             }
 
             if(correct) {
@@ -253,7 +353,7 @@ public class TimeTrialActivity extends AppCompatActivity {
         private void displayGameOver() {
             setTimerText("WRONG!");
             hideKeyboard();
-            showReplayButton();
+            showBigReplayButton(true);
         }
     }
 
@@ -286,12 +386,80 @@ public class TimeTrialActivity extends AppCompatActivity {
         imm.showSoftInput(view, 0);
     }
 
-    private void showReplayButton() {
+    private void showUI(final Boolean show) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                btnReplayHidden.setActivated(true);
-                btnReplayHidden.setVisibility(View.VISIBLE);
+                if(show) {
+                    tvTestProgress.setVisibility(View.VISIBLE);
+                    btnReplayTopRight.setVisibility(View.VISIBLE);
+                    tvTimer.setVisibility(View.VISIBLE);
+                    tvPickup.setVisibility(View.VISIBLE);
+                    tvPickupTime.setVisibility(View.VISIBLE);
+                    ivItem.setVisibility(View.VISIBLE);
+                    tvRespawn.setVisibility(View.VISIBLE);
+                    tvSeparator.setVisibility(View.VISIBLE);
+                    etRespawnSecond.setVisibility(View.VISIBLE);
+                } else {
+                    tvTestProgress.setVisibility(View.GONE);
+                    btnReplayTopRight.setVisibility(View.GONE);
+                    tvTimer.setVisibility(View.GONE);
+                    tvPickup.setVisibility(View.GONE);
+                    tvPickupTime.setVisibility(View.GONE);
+                    ivItem.setVisibility(View.GONE);
+                    tvRespawn.setVisibility(View.GONE);
+                    tvSeparator.setVisibility(View.GONE);
+                    tvRespawnMinute.setVisibility(View.GONE);
+                    etRespawnMinute.setVisibility(View.GONE);
+                    etRespawnSecond.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
+
+    private void showTvCountdown(final Boolean show) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(show) {
+                    tvCountdown.setVisibility(View.VISIBLE);
+                } else {
+                    tvCountdown.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
+
+    private void showBigReplayButton(final Boolean show) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(show) {
+                    btnReplayHidden.setActivated(true);
+                    btnReplayHidden.setVisibility(View.VISIBLE);
+                } else {
+                    btnReplayHidden.setActivated(false);
+                    btnReplayHidden.setVisibility(View.GONE);
+                }
+
+            }
+        });
+    }
+
+    private void setCountdownText(final String text) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tvCountdown.setText(text);
+            }
+        });
+    }
+
+    private void setTvTestProgress(final int progress, final int testCount) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tvTestProgress.setText(progress + "/" + testCount);
             }
         });
     }
@@ -380,4 +548,10 @@ public class TimeTrialActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        soundPool.release();
+        soundPool = null;
+    }
 }

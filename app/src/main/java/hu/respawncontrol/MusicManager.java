@@ -13,6 +13,7 @@ public class MusicManager {
     private MusicManager(Context context) {
         this.context = context.getApplicationContext();
         mediaPlayer = MediaPlayer.create(context, R.raw.theme_song);
+        mediaPlayer.setLooping(true);
     }
 
     public void onStart() {

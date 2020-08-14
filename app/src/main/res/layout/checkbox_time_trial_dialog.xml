@@ -6,5 +6,5 @@
     android:layout_height="wrap_content"
     android:buttonTint="@android:color/white"
     android:textColor="@android:color/white"
-    android:textSize="20sp">
+    android:textSize="16sp">
 </CheckBox>
