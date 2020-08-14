@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -61,8 +62,10 @@ public class TimeTrialActivity extends AppCompatActivity {
     private SimpleDateFormat pickupFormatter = new SimpleDateFormat("m:ss", Locale.ROOT);
     private SimpleDateFormat respawnMinuteFormatter = new SimpleDateFormat("m", Locale.ROOT);
 
-    boolean minuteHintEnabled;
-    boolean itemSoundsEnabled;
+    private boolean minuteHintEnabled;
+    private boolean itemSoundsEnabled;
+
+    private int minuteEtMaxLength = 2;
 
     private SoundPool soundPool;
 
@@ -118,7 +121,7 @@ public class TimeTrialActivity extends AppCompatActivity {
         etRespawnMinute.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
-                if(s.length() >= 2) {
+                if(s.length() >= minuteEtMaxLength) {
                     etRespawnSecond.requestFocus();
                 }
             }
@@ -307,7 +310,10 @@ public class TimeTrialActivity extends AppCompatActivity {
             if(minuteInputRequired) {
                 setMinuteInput(true);
                 setEtRespawnMinute("");
-                setTvRespawnMinute("00");   // Needed for spacing
+                // Needed for spacing
+                setTvRespawnMinute("00");
+                // Require 2 decimals if respawn time is 10 mins or higher, 1 digits otherwise
+                setEtRespawnMinuteMaxLength((respawnMoment / 1000 > 599 ? 2 : 1));
             } else {
                 setMinuteInput(false);
 
@@ -528,6 +534,10 @@ public class TimeTrialActivity extends AppCompatActivity {
                 etRespawnMinute.setText(text);
             }
         });
+    }
+
+    private void setEtRespawnMinuteMaxLength(final int length) {
+        minuteEtMaxLength = length;
     }
 
     private void setEtRespawnSecond(final String text) {
