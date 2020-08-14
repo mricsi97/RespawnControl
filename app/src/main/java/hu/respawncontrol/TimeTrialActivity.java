@@ -279,6 +279,7 @@ public class TimeTrialActivity extends AppCompatActivity {
             }
 
             // TODO: saveResults();
+            setTvTestProgress(itemsToDisplay.size(), itemsToDisplay.size());
             displayResults();
         }
 
