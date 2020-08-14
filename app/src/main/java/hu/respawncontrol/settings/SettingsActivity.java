@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import hu.respawncontrol.MusicManager;
 import hu.respawncontrol.R;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -17,5 +18,21 @@ public class SettingsActivity extends AppCompatActivity {
                 .beginTransaction()
                 .replace(R.id.settings, new SettingsFragment())
                 .commit();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        MusicManager musicManager = MusicManager.getInstance(this);
+        musicManager.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        MusicManager musicManager = MusicManager.getInstance(this);
+        musicManager.onStop();
     }
 }

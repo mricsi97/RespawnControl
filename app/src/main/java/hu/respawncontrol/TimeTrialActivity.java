@@ -109,6 +109,22 @@ public class TimeTrialActivity extends AppCompatActivity {
         startTimeTrial();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        MusicManager musicManager = MusicManager.getInstance(this);
+        musicManager.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        MusicManager musicManager = MusicManager.getInstance(this);
+        musicManager.onStop();
+    }
+
     private void startTimeTrial() {
         ArrayList<Item> itemsToDisplay = new ArrayList<>();
         ArrayList<Long> pickupMoments = new ArrayList<>();
