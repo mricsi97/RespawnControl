@@ -11,7 +11,7 @@ public class MusicManager {
     private int startCounter;
 
     private MusicManager(Context context) {
-        this.context = context;
+        this.context = context.getApplicationContext();
         mediaPlayer = MediaPlayer.create(context, R.raw.theme_song);
     }
 
@@ -37,14 +37,14 @@ public class MusicManager {
         return instance;
     }
 
-    private void startMusic() {
+    public void startMusic() {
         if(mediaPlayer == null) {
             mediaPlayer = MediaPlayer.create(context, R.raw.theme_song);
         }
         mediaPlayer.start();
     }
 
-    private void stopMusic() {
+    public void stopMusic() {
         if(mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;

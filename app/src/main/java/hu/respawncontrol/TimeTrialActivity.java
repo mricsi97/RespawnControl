@@ -113,16 +113,22 @@ public class TimeTrialActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        MusicManager musicManager = MusicManager.getInstance(this);
-        musicManager.onStart();
+        boolean musicEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("music", false);
+        if(musicEnabled) {
+            MusicManager musicManager = MusicManager.getInstance(this);
+            musicManager.onStart();
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
 
-        MusicManager musicManager = MusicManager.getInstance(this);
-        musicManager.onStop();
+        boolean musicEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("music", false);
+        if(musicEnabled) {
+            MusicManager musicManager = MusicManager.getInstance(this);
+            musicManager.onStop();
+        }
     }
 
     private void startTimeTrial() {

@@ -1,6 +1,7 @@
 package hu.respawncontrol;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -61,16 +62,22 @@ public class MainActivity extends AppCompatActivity implements TimeTrialOptionsD
     protected void onStart() {
         super.onStart();
 
-        MusicManager musicManager = MusicManager.getInstance(this);
-        musicManager.onStart();
+        boolean musicEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("music", false);
+        if(musicEnabled) {
+            MusicManager musicManager = MusicManager.getInstance(this);
+            musicManager.onStart();
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
 
-        MusicManager musicManager = MusicManager.getInstance(this);
-        musicManager.onStop();
+        boolean musicEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("music", false);
+        if(musicEnabled) {
+            MusicManager musicManager = MusicManager.getInstance(this);
+            musicManager.onStop();
+        }
     }
 
     @Override
