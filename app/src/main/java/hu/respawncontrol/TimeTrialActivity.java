@@ -1,6 +1,7 @@
 package hu.respawncontrol;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -61,32 +62,37 @@ public class TimeTrialActivity extends AppCompatActivity {
     private SimpleDateFormat respawnMinuteFormatter = new SimpleDateFormat("m", Locale.ROOT);
 
     boolean minuteHintEnabled;
-
-    private static Thread testThread;
+    boolean itemSoundsEnabled;
 
     private SoundPool soundPool;
+
+    private static Thread testThread;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_time_trial);
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_GAME)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
-                    .build();
-
-            soundPool = new SoundPool.Builder()
-                    .setMaxStreams(3)
-                    .setAudioAttributes(audioAttributes)
-                    .build();
-        } else {
-            soundPool = new SoundPool(3, AudioManager.STREAM_MUSIC, 0);
-        }
-
         random = new Random();
-        minuteHintEnabled = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("time_trial_minute_hint", false);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        minuteHintEnabled = preferences.getBoolean("time_trial_minute_hint", false);
+        itemSoundsEnabled = preferences.getBoolean("item_sounds", false);
+
+        if(itemSoundsEnabled) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_GAME)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
+                        .build();
+
+                soundPool = new SoundPool.Builder()
+                        .setMaxStreams(3)
+                        .setAudioAttributes(audioAttributes)
+                        .build();
+            } else {
+                soundPool = new SoundPool(3, AudioManager.STREAM_MUSIC, 0);
+            }
+        }
 
         tvCountdown = (TextView) findViewById(R.id.tvCountdown);
         tvTestProgress = (TextView) findViewById(R.id.tvTestProgress);
@@ -105,7 +111,7 @@ public class TimeTrialActivity extends AppCompatActivity {
         btnReplayTopRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                restartTimeTrial();
+                restartTimeTrial(true);
             }
         });
 
@@ -135,11 +141,10 @@ public class TimeTrialActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
         });
 
-
         btnReplayHidden.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                restartTimeTrial();
+                restartTimeTrial(true);
             }
         });
 
@@ -161,15 +166,26 @@ public class TimeTrialActivity extends AppCompatActivity {
         }
     }
 
-
     @Override
     protected void onStop() {
         super.onStop();
+
+        hideKeyboard();
 
         boolean musicEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("music", false);
         if(musicEnabled) {
             MusicManager musicManager = MusicManager.getInstance(this);
             musicManager.onStop();
+        }
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(soundPool != null) {
+            soundPool.release();
+            soundPool = null;
         }
     }
 
@@ -198,21 +214,23 @@ public class TimeTrialActivity extends AppCompatActivity {
 
         // Load sounds for all items
         HashMap<String, ArrayList<Integer>> soundIdLists = new HashMap<>();
-        for(Item item : itemsToDisplay) {
-            String itemName = item.getName();
+        if(itemSoundsEnabled) {
+            for(Item item : itemsToDisplay) {
+                String itemName = item.getName();
 
-            if(soundIdLists.containsKey(itemName)){
-                continue;
+                if(soundIdLists.containsKey(itemName)){
+                    continue;
+                }
+
+                ArrayList<Integer> soundResourceIds = (ArrayList<Integer>) item.getSoundResourceIds();
+                ArrayList<Integer> soundIdList = new ArrayList<>();
+                for(Integer resourceId : soundResourceIds) {
+                    Integer soundId = soundPool.load(this, resourceId, 1);
+                    soundIdList.add(soundId);
+                }
+
+                soundIdLists.put(itemName, soundIdList);
             }
-
-            ArrayList<Integer> soundResourceIds = (ArrayList<Integer>) item.getSoundResourceIds();
-            ArrayList<Integer> soundIdList = new ArrayList<>();
-            for(Integer resourceId : soundResourceIds) {
-                Integer soundId = soundPool.load(this, resourceId, 1);
-                soundIdList.add(soundId);
-            }
-
-            soundIdLists.put(itemName, soundIdList);
         }
 
         // Run tests
@@ -239,6 +257,7 @@ public class TimeTrialActivity extends AppCompatActivity {
         @Override
         public void run() {
             doCountdown(3);
+            showKeyboard();
 
             solveTimes = new long[itemsToDisplay.size()];
             startTime = SystemClock.elapsedRealtime();
@@ -301,10 +320,12 @@ public class TimeTrialActivity extends AppCompatActivity {
             setItemImage(item.getImageResourceId());
 
             // Play sounds for the item
-            ArrayList<Integer> soundIds = soundIdLists.get(item.getName());
-            if(soundIds != null) {
-                for(Integer soundId : soundIds) {
-                    soundPool.play(soundId, 1, 1, 0, 0, 1);
+            if(itemSoundsEnabled) {
+                ArrayList<Integer> soundIds = soundIdLists.get(item.getName());
+                if(soundIds != null) {
+                    for(Integer soundId : soundIds) {
+                        soundPool.play(soundId, 1, 1, 0, 0, 1);
+                    }
                 }
             }
 
@@ -342,6 +363,8 @@ public class TimeTrialActivity extends AppCompatActivity {
         }
 
         private void displayResults() {
+            hideKeyboard();
+
             Bundle bundle = new Bundle();
             bundle.putParcelableArrayList(ITEMS_TESTED, itemsToDisplay);
             bundle.putLongArray(SOLVE_TIMES, solveTimes);
@@ -357,14 +380,17 @@ public class TimeTrialActivity extends AppCompatActivity {
         }
     }
 
-    public void restartTimeTrial() {
+    public void restartTimeTrial(Boolean showKeyboard) {
+        if(showKeyboard){
+            showKeyboard();
+        }
+
         testThread.interrupt();
         try {
             testThread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        showKeyboard();
         startTimeTrial();
     }
 
@@ -379,11 +405,7 @@ public class TimeTrialActivity extends AppCompatActivity {
 
     private void showKeyboard() {
         InputMethodManager imm = (InputMethodManager) this.getSystemService(INPUT_METHOD_SERVICE);
-        View view = this.getCurrentFocus();
-        if(view == null) {
-            view = new View(this);
-        }
-        imm.showSoftInput(view, 0);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 
     private void showUI(final Boolean show) {
@@ -435,13 +457,10 @@ public class TimeTrialActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if(show) {
-                    btnReplayHidden.setActivated(true);
                     btnReplayHidden.setVisibility(View.VISIBLE);
                 } else {
-                    btnReplayHidden.setActivated(false);
                     btnReplayHidden.setVisibility(View.GONE);
                 }
-
             }
         });
     }
@@ -548,10 +567,4 @@ public class TimeTrialActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        soundPool.release();
-        soundPool = null;
-    }
 }

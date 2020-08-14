@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
@@ -20,6 +19,10 @@
         <SwitchPreferenceCompat
             app:key="music"
             app:title="Enable music"
+            app:iconSpaceReserved="false" />
+        <SwitchPreferenceCompat
+            app:key="item_sounds"
+            app:title="Enable item pickup sounds"
             app:iconSpaceReserved="false" />
         <Preference
             app:key="version"

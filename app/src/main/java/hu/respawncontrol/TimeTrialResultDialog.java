@@ -1,6 +1,7 @@
 package hu.respawncontrol;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -93,11 +94,12 @@ public class TimeTrialResultDialog extends DialogFragment {
         btnReplay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((TimeTrialActivity)getActivity()).restartTimeTrial();
+                ((TimeTrialActivity)getActivity()).restartTimeTrial(false);
                 dismiss();
             }
         });
 
         return view;
     }
+
 }
