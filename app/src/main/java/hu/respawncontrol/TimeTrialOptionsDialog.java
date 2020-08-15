@@ -131,7 +131,13 @@ public class TimeTrialOptionsDialog extends DialogFragment {
                 if(buttonText.equals("Custom")){
                     final EditText etCustomTrial = view.findViewById(R.id.etCustomTrial);
 
-                    testAmount = Integer.parseInt(etCustomTrial.getText().toString());
+                    try {
+                        testAmount = Integer.parseInt(etCustomTrial.getText().toString());
+                    } catch(NumberFormatException e) {
+                        Snackbar.make(view, "Please enter a valid amount.", Snackbar.LENGTH_LONG).show();
+                        tvTestAmount.setError("");
+                        return;
+                    }
                     if(testAmount < 1) {
                         Snackbar.make(view, "Please enter a valid amount.", Snackbar.LENGTH_LONG).show();
                         tvTestAmount.setError("");

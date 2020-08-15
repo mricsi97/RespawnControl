@@ -11,6 +11,7 @@ import android.os.SystemClock;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -38,7 +39,7 @@ public class TimeTrialActivity extends AppCompatActivity {
 
     private static final String TAG = "TimeTrialActivity";
     private static Random random;
-
+    
     private TextView tvCountdown;
     private TextView tvTestProgress;
     private ImageButton btnReplayTopRight;
@@ -70,6 +71,7 @@ public class TimeTrialActivity extends AppCompatActivity {
     private SoundPool soundPool;
 
     private static Thread testThread;
+    private static boolean interruptThread;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -161,7 +163,7 @@ public class TimeTrialActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
+        
         boolean musicEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("music", false);
         if(musicEnabled) {
             MusicManager musicManager = MusicManager.getInstance(this);
@@ -172,7 +174,7 @@ public class TimeTrialActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-
+        
         hideKeyboard();
 
         boolean musicEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("music", false);
@@ -182,10 +184,12 @@ public class TimeTrialActivity extends AppCompatActivity {
         }
     }
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        interruptThread = true;
+
         if(soundPool != null) {
             soundPool.release();
             soundPool = null;
@@ -238,6 +242,7 @@ public class TimeTrialActivity extends AppCompatActivity {
 
         // Run tests
         TestRunner testRunner = new TestRunner(itemsToDisplay, soundIdLists, pickupMoments, respawnMoments);
+        interruptThread = false;
         testThread = new Thread(testRunner);
         testThread.start();
     }
@@ -260,6 +265,11 @@ public class TimeTrialActivity extends AppCompatActivity {
         @Override
         public void run() {
             doCountdown(3);
+
+            if(interruptThread) {
+                return;
+            }
+
             showKeyboard();
 
             solveTimes = new long[itemsToDisplay.size()];
