@@ -171,6 +171,9 @@ public class TimeTrialViewModel extends AndroidViewModel {
         this.selectedTestAmount = selectedTestAmount;
     }
 
+    public MutableLiveData<Long> getSolveTimeSum() {
+        return solveTimeSum;
+    }
 
     public MutableLiveData<List<Item>> getTestItems() {
         return testItems;

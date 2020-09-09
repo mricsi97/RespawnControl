@@ -1,6 +1,8 @@
 package hu.respawncontrol;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -54,6 +56,8 @@ public class TimeTrialOptionsDialog extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.dialog_time_trial_options, container, false);
+
+
 
         if (getDialog() != null && getDialog().getWindow() != null) {
             getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -195,5 +199,11 @@ public class TimeTrialOptionsDialog extends DialogFragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         dialogFinishedListener = (DialogFinishedListener) getActivity();
+    }
+
+    @Override
+    public void onCancel(@NonNull DialogInterface dialog) {
+        super.onCancel(dialog);
+        getActivity().finish();
     }
 }

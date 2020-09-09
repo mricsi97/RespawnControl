@@ -26,12 +26,6 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ResultView
 
     private SimpleDateFormat timeFormatter = new SimpleDateFormat("ss.SS", Locale.ROOT);
 
-//    public ResultAdapter(ArrayList<Result> results, ArrayList<Item> testedItems) {
-//        this.results = results;
-//        this.testedItems = testedItems;
-//    }
-
-
     public void setResults(ArrayList<Result> results) {
         this.results = results;
     }

@@ -58,9 +58,10 @@ public class TimeTrialActivity extends AppCompatActivity implements TimeTrialOpt
     private SimpleDateFormat respawnMinuteFormatter = new SimpleDateFormat("m", Locale.ROOT);
 
     private boolean minuteHintEnabled;
-    private boolean itemSoundsEnabled;
-    private boolean countdownSoundEnabled;
     private int countdownSeconds;
+    private boolean countdownSoundEnabled;
+    private boolean itemSoundsEnabled;
+    private boolean voiceLinesEnabled;
 
     private int minuteEtMaxLength = 2;
 
@@ -91,11 +92,12 @@ public class TimeTrialActivity extends AppCompatActivity implements TimeTrialOpt
 //        random = new Random();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         minuteHintEnabled = preferences.getBoolean("time_trial_minute_hint", false);
-        itemSoundsEnabled = preferences.getBoolean("item_sounds", false);
-        countdownVolume = (float) (1 - (Math.log(MAX_VOLUME + 1 - preferences.getInt("countdown_volume", 100)) / Math.log(MAX_VOLUME)));
-        itemSoundVolume = (float) (1 - (Math.log(MAX_VOLUME + 1 - preferences.getInt("pickup_volume", 95)) / Math.log(MAX_VOLUME)));
-        countdownSoundEnabled = preferences.getBoolean("countdown_sound", false);
         countdownSeconds = Integer.parseInt(preferences.getString("time_trial_countdown_seconds", "3"));
+        countdownSoundEnabled = preferences.getBoolean("countdown_sound", false);
+        countdownVolume = (float) (1 - (Math.log(MAX_VOLUME + 1 - preferences.getInt("countdown_volume", 100)) / Math.log(MAX_VOLUME)));
+        itemSoundsEnabled = preferences.getBoolean("item_sounds", false);
+        itemSoundVolume = (float) (1 - (Math.log(MAX_VOLUME + 1 - preferences.getInt("pickup_volume", 95)) / Math.log(MAX_VOLUME)));
+        voiceLinesEnabled = preferences.getBoolean("voice_lines", false);
 
         if(itemSoundsEnabled || countdownSoundEnabled) {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -378,8 +380,9 @@ public class TimeTrialActivity extends AppCompatActivity implements TimeTrialOpt
             if(itemSoundsEnabled) {
                 ArrayList<Integer> soundIds = soundIdLists.get(item.getName());
                 if(soundIds != null) {
-                    for(Integer soundId : soundIds) {
-                        soundPool.play(soundId, itemSoundVolume, itemSoundVolume, 0, 0, 1);
+                    int numberOfSoundsToPlay = voiceLinesEnabled ? 2 : 1;
+                    for(int i = 0; i < numberOfSoundsToPlay && i < soundIds.size(); i++) {
+                        soundPool.play(soundIds.get(i), itemSoundVolume, itemSoundVolume, 0, 0, 1);
                     }
                 }
             }

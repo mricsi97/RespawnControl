@@ -33,7 +33,6 @@ public class TimeTrialResultDialog extends DialogFragment {
 
     private SimpleDateFormat timeFormatter = new SimpleDateFormat("ss.SS", Locale.ROOT);
 
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -50,6 +49,7 @@ public class TimeTrialResultDialog extends DialogFragment {
         recyclerView.setLayoutManager(layoutManager);
 
         final TextView tvAverageTime = (TextView) view.findViewById(R.id.tvAverageTime);
+        final TextView tvScore = (TextView) view.findViewById(R.id.tvScore);
 
         TimeTrialViewModel viewModel = new ViewModelProvider(getActivity(),
                 ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(TimeTrialViewModel.class);
@@ -57,6 +57,14 @@ public class TimeTrialResultDialog extends DialogFragment {
         viewModel.calculateSolveTimeDifferences();
         viewModel.saveScore();
         viewModel.saveResults();
+
+        viewModel.getSolveTimeSum().observe(this,
+                new Observer<Long>() {
+                    @Override
+                    public void onChanged(Long solveTimeSum) {
+                        tvScore.setText("Score: " + timeFormatter.format(solveTimeSum) + " s");
+                    }
+                });
 
         viewModel.getResults().observe(this,
                 new Observer<List<Result>>() {
@@ -77,8 +85,8 @@ public class TimeTrialResultDialog extends DialogFragment {
         viewModel.getAverageSolveTime().observe(this,
                 new Observer<Long>() {
                     @Override
-                    public void onChanged(Long aLong) {
-                        tvAverageTime.setText(timeFormatter.format(aLong));
+                    public void onChanged(Long averageSolveTime) {
+                        tvAverageTime.setText(timeFormatter.format(averageSolveTime));
                     }
                 });
 
