@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
         app:key="time_trial"
@@ -10,6 +10,12 @@
             app:key="time_trial_minute_hint"
             app:title="Enable minute hint"
             app:iconSpaceReserved="false"/>
+        <EditTextPreference
+            app:key="time_trial_countdown_seconds"
+            app:title="Countdown seconds"
+            app:useSimpleSummaryProvider="true"
+            app:defaultValue="3"
+            app:iconSpaceReserved="false" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -19,10 +25,17 @@
         <SwitchPreferenceCompat
             app:key="music"
             app:title="Enable music"
+            app:defaultValue="true"
+            app:iconSpaceReserved="false" />
+        <SwitchPreferenceCompat
+            app:key="countdown_sound"
+            app:title="Enable countdown sound"
+            app:defaultValue="true"
             app:iconSpaceReserved="false" />
         <SwitchPreferenceCompat
             app:key="item_sounds"
             app:title="Enable item pickup sounds"
+            app:defaultValue="true"
             app:iconSpaceReserved="false" />
         <Preference
             app:key="version"

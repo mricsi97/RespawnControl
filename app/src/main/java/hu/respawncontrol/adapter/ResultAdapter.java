@@ -16,17 +16,28 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import hu.respawncontrol.R;
-import hu.respawncontrol.data.Item;
-import hu.respawncontrol.data.Result;
+import hu.respawncontrol.data.room.entity.Item;
+import hu.respawncontrol.data.room.entity.Result;
 
 public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ResultViewHolder> {
 
     private ArrayList<Result> results;
+    private ArrayList<Item> testedItems;
 
     private SimpleDateFormat timeFormatter = new SimpleDateFormat("ss.SS", Locale.ROOT);
 
-    public ResultAdapter(ArrayList<Result> results) {
+//    public ResultAdapter(ArrayList<Result> results, ArrayList<Item> testedItems) {
+//        this.results = results;
+//        this.testedItems = testedItems;
+//    }
+
+
+    public void setResults(ArrayList<Result> results) {
         this.results = results;
+    }
+
+    public void setTestedItems(ArrayList<Item> testedItems) {
+        this.testedItems = testedItems;
     }
 
     @NonNull
@@ -42,7 +53,7 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ResultView
     public void onBindViewHolder(@NonNull ResultViewHolder holder, int position) {
         Result result = results.get(position);
         Long solveTime = result.getSolveTime();
-        Item item = result.getItem();
+        Item item = testedItems.get(position);
 
         holder.tvTestNumber.setText((position+1) + ".");
         holder.tvSolveTime.setText(timeFormatter.format(solveTime));

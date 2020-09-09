@@ -1,6 +1,5 @@
 package hu.respawncontrol;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
@@ -9,9 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.Editable;
-import android.text.InputFilter;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -21,24 +18,24 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 
-import hu.respawncontrol.data.Item;
-import hu.respawncontrol.data.ItemType;
+import hu.respawncontrol.data.TimeTrialViewModel;
+import hu.respawncontrol.data.room.entity.Item;
 
-public class TimeTrialActivity extends AppCompatActivity {
-
-    public static final String ITEMS_TESTED = "ITEMS_TESTED";
-    public static final String SOLVE_TIMES = "SOLVE_TIMES";
+public class TimeTrialActivity extends AppCompatActivity implements TimeTrialOptionsDialog.DialogFinishedListener {
 
     private static final String TAG = "TimeTrialActivity";
-    private static Random random;
+
+    private TimeTrialViewModel viewModel;
     
     private TextView tvCountdown;
     private TextView tvTestProgress;
@@ -54,9 +51,6 @@ public class TimeTrialActivity extends AppCompatActivity {
     private EditText etRespawnSecond;
     private ImageButton btnReplayHidden;
 
-    private ArrayList<ItemType> itemTypes;
-    private Integer testAmount;
-
     private long startTime;
     private Boolean isSecondInputLongerThanTwo;
     private SimpleDateFormat timerFormatter = new SimpleDateFormat("m:ss.SS", Locale.ROOT);
@@ -65,10 +59,19 @@ public class TimeTrialActivity extends AppCompatActivity {
 
     private boolean minuteHintEnabled;
     private boolean itemSoundsEnabled;
+    private boolean countdownSoundEnabled;
+    private int countdownSeconds;
 
     private int minuteEtMaxLength = 2;
 
     private SoundPool soundPool;
+    HashMap<String, ArrayList<Integer>> soundIdLists = new HashMap<>();
+
+    private int countdownSoundId;
+
+    private ArrayList<Item> testItems;
+    private ArrayList<Long> pickupMoments;
+    private ArrayList<Long> respawnMoments;
 
     private static Thread testThread;
     private static boolean interruptThread;
@@ -78,12 +81,18 @@ public class TimeTrialActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_time_trial);
 
-        random = new Random();
+        // Start setup dialog
+        TimeTrialOptionsDialog dialog = new TimeTrialOptionsDialog();
+        dialog.show(getSupportFragmentManager(), "TimeTrialOptionsDialog");
+
+//        random = new Random();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         minuteHintEnabled = preferences.getBoolean("time_trial_minute_hint", false);
         itemSoundsEnabled = preferences.getBoolean("item_sounds", false);
+        countdownSoundEnabled = preferences.getBoolean("countdown_sound", false);
+        countdownSeconds = Integer.parseInt(preferences.getString("time_trial_countdown_seconds", "3"));
 
-        if(itemSoundsEnabled) {
+        if(itemSoundsEnabled || countdownSoundEnabled) {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 AudioAttributes audioAttributes = new AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_GAME)
@@ -97,6 +106,10 @@ public class TimeTrialActivity extends AppCompatActivity {
             } else {
                 soundPool = new SoundPool(3, AudioManager.STREAM_MUSIC, 0);
             }
+        }
+
+        if(countdownSoundEnabled) {
+            countdownSoundId = soundPool.load(TimeTrialActivity.this, R.raw.ui_countdown, 1);
         }
 
         tvCountdown = (TextView) findViewById(R.id.tvCountdown);
@@ -153,17 +166,42 @@ public class TimeTrialActivity extends AppCompatActivity {
             }
         });
 
-        Intent intent = getIntent();
-        itemTypes = intent.getParcelableArrayListExtra(MainActivity.SELECTED_ITEM_TYPES);
-        testAmount = intent.getIntExtra(MainActivity.TEST_AMOUNT, -1);
+        viewModel = new ViewModelProvider(this,
+                ViewModelProvider.AndroidViewModelFactory.getInstance(this.getApplication())).get(TimeTrialViewModel.class);
 
+        viewModel.getTestItems().observe(this,
+                new Observer<List<Item>>() {
+                    @Override
+                    public void onChanged(List<Item> items) {
+                        testItems = (ArrayList<Item>) items;
+                        loadSoundsForItems(items);
+                    }
+                });
+        viewModel.getPickupMoments().observe(this,
+                new Observer<List<Long>>() {
+                    @Override
+                    public void onChanged(List<Long> longs) {
+                        pickupMoments = (ArrayList<Long>) longs;
+                    }
+                });
+        viewModel.getRespawnMoments().observe(this,
+                new Observer<List<Long>>() {
+                    @Override
+                    public void onChanged(List<Long> longs) {
+                        respawnMoments = (ArrayList<Long>) longs;
+                    }
+                });
+    }
+
+    @Override
+    public void dialogFinished() {
         startTimeTrial();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        
+
         boolean musicEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("music", false);
         if(musicEnabled) {
             MusicManager musicManager = MusicManager.getInstance(this);
@@ -199,30 +237,18 @@ public class TimeTrialActivity extends AppCompatActivity {
     private void startTimeTrial() {
         showBigReplayButton(false);
 
-        ArrayList<Item> itemsToDisplay = new ArrayList<>();
-        ArrayList<Long> pickupMoments = new ArrayList<>();
-        ArrayList<Long> respawnMoments = new ArrayList<>();
-        for(int i = 0; i < testAmount; i++) {
-            // Select random item type and item
-            ItemType randomItemType = itemTypes.get(random.nextInt(itemTypes.size()));
-            ArrayList<Item> items = (ArrayList<Item>) randomItemType.getItems();
-            Item randomItem = items.get(random.nextInt(items.size()));
-            itemsToDisplay.add(randomItem);
+        viewModel.prepareTests();
 
-            // Create random time for pickup in milliseconds
-            long respawnTime = randomItem.getRespawnTimeInSeconds() * 1000;
-            long randomPickupMoment = random.nextInt(780) * 1000;
-            pickupMoments.add(randomPickupMoment);
+        // Run tests
+        TestRunner testRunner = new TestRunner(testItems, soundIdLists, pickupMoments, respawnMoments);
+        interruptThread = false;
+        testThread = new Thread(testRunner);
+        testThread.start();
+    }
 
-            // Calculate time for respawn (solution)
-            long respawnMoment = randomPickupMoment + respawnTime;
-            respawnMoments.add(respawnMoment);
-        }
-
-        // Load sounds for all items
-        HashMap<String, ArrayList<Integer>> soundIdLists = new HashMap<>();
+    private void loadSoundsForItems(List<Item> items) {
         if(itemSoundsEnabled) {
-            for(Item item : itemsToDisplay) {
+            for(Item item : items) {
                 String itemName = item.getName();
 
                 if(soundIdLists.containsKey(itemName)){
@@ -239,32 +265,27 @@ public class TimeTrialActivity extends AppCompatActivity {
                 soundIdLists.put(itemName, soundIdList);
             }
         }
-
-        // Run tests
-        TestRunner testRunner = new TestRunner(itemsToDisplay, soundIdLists, pickupMoments, respawnMoments);
-        interruptThread = false;
-        testThread = new Thread(testRunner);
-        testThread.start();
     }
 
     private class TestRunner implements Runnable {
-        private ArrayList<Item> itemsToDisplay;
+        private ArrayList<Item> itemsToTest;
         private HashMap<String, ArrayList<Integer>> soundIdLists;
         private ArrayList<Long> pickupMoments, respawnMoments;
 
         private long lastTimerUpdate;
-        private long[] solveTimes;
+        private ArrayList<Long> solveTimes;
 
-        TestRunner(ArrayList<Item> itemsToDisplay, HashMap<String, ArrayList<Integer>> soundIdLists, ArrayList<Long> pickupMoments, ArrayList<Long> respawnMoments) {
-            this.itemsToDisplay = itemsToDisplay;
+        TestRunner(ArrayList<Item> itemsToTest, HashMap<String, ArrayList<Integer>> soundIdLists, ArrayList<Long> pickupMoments, ArrayList<Long> respawnMoments) {
+            this.itemsToTest = itemsToTest;
             this.soundIdLists = soundIdLists;
             this.pickupMoments = pickupMoments;
             this.respawnMoments = respawnMoments;
+            solveTimes = new ArrayList<>();
         }
 
         @Override
         public void run() {
-            doCountdown(3);
+            doCountdown(countdownSeconds);
 
             if(interruptThread) {
                 return;
@@ -272,11 +293,11 @@ public class TimeTrialActivity extends AppCompatActivity {
 
             showKeyboard();
 
-            solveTimes = new long[itemsToDisplay.size()];
+//            solveTimes = new Long[itemsToTest.size()];
             startTime = SystemClock.elapsedRealtime();
-            for(int i = 0; i < itemsToDisplay.size(); i++) {
+            for(int i = 0; i < itemsToTest.size(); i++) {
                 isSecondInputLongerThanTwo = false;
-                Long solveTime = doTest(i, itemsToDisplay.get(i), pickupMoments.get(i), respawnMoments.get(i));
+                Long solveTime = doTest(i, itemsToTest.get(i), pickupMoments.get(i), respawnMoments.get(i));
 
                 if(solveTime == -1L) { // Wrong solution
                     displayGameOver();
@@ -284,20 +305,30 @@ public class TimeTrialActivity extends AppCompatActivity {
                 } else if(solveTime == -2L) { // Thread interrupted (~ game restarted)
                     return;
                 } else {
-                    solveTimes[i] = solveTime;
+                    solveTimes.add(solveTime);
                 }
             }
 
-            // TODO: saveResults();
-            setTvTestProgress(itemsToDisplay.size(), itemsToDisplay.size());
-            displayResults();
+            setTvTestProgress(itemsToTest.size(), itemsToTest.size());
+
+            displayAndSaveResults();
         }
 
         private void doCountdown(int countDownSeconds) {
-            showUI(false);
-            showTvCountdown(true);
+            if(countDownSeconds <= 0) {
+                return;
+            }
 
+            showUI(false);
+
+            showTvCountdown(true);
             while(countDownSeconds > 0) {
+                if(interruptThread) {
+                    return;
+                }
+                if(countdownSoundEnabled) {
+                    soundPool.play(countdownSoundId, 1, 1, 0, 0, 1);
+                }
                 setCountdownText(String.valueOf(countDownSeconds));
                 try {
                     Thread.sleep(1000);
@@ -315,7 +346,7 @@ public class TimeTrialActivity extends AppCompatActivity {
             boolean minuteInputRequired = item.getRespawnTimeInSeconds() > 60;
 
             // Display times, input fields and icon
-            setTvTestProgress(progress, itemsToDisplay.size());
+            setTvTestProgress(progress, itemsToTest.size());
             setEtRespawnSecond("");
             setPickupTime(pickupMoment);
             if(minuteInputRequired) {
@@ -379,14 +410,12 @@ public class TimeTrialActivity extends AppCompatActivity {
             }
         }
 
-        private void displayResults() {
+        private void displayAndSaveResults() {
             hideKeyboard();
 
-            Bundle bundle = new Bundle();
-            bundle.putParcelableArrayList(ITEMS_TESTED, itemsToDisplay);
-            bundle.putLongArray(SOLVE_TIMES, solveTimes);
-            TimeTrialResultDialog resultDialog = new TimeTrialResultDialog(/*this*/);
-            resultDialog.setArguments(bundle);
+            viewModel.setSolveTimes(solveTimes);
+
+            TimeTrialResultDialog resultDialog = new TimeTrialResultDialog();
             resultDialog.show(getSupportFragmentManager(), "TimeTrialResultDialog");
         }
 
@@ -398,7 +427,7 @@ public class TimeTrialActivity extends AppCompatActivity {
     }
 
     public void restartTimeTrial(Boolean showKeyboard) {
-        if(showKeyboard){
+        if(showKeyboard) {
             showKeyboard();
         }
 

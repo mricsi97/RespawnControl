@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1361593284",
+    "firebase_url": "https://respawn-control-46157720.firebaseio.com",
+    "project_id": "respawn-control-46157720",
+    "storage_bucket": "respawn-control-46157720.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1361593284:android:d8daa5b4a151dbd8875a91",
+        "android_client_info": {
+          "package_name": "hu.respawncontrol"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1361593284-h5l9tsh12sssmn3pvreeu6v2n5sccbij.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hu.respawncontrol",
+            "certificate_hash": "99fc4c94f6b46edcb92e2eda326827dc25224b99"
+          }
+        },
+        {
+          "client_id": "1361593284-agmv42k6443rami99n4e1p15evlf12aa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCp7YdsKkmIYB792wRuSYu4o1H-mbPMgNw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1361593284-agmv42k6443rami99n4e1p15evlf12aa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

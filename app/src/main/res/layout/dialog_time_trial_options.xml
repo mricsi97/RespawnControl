@@ -18,13 +18,18 @@
         android:textSize="18sp"
         android:layout_marginBottom="10dp"/>
 
-    <GridLayout
-        android:id="@+id/checkboxGridTimeTrial"
-        android:layout_width="match_parent"
+    <FrameLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:useDefaultMargins="true"
-        android:columnCount="2">
-    </GridLayout>
+        android:background="@drawable/round_button_empty">
+        <Spinner
+            android:id="@+id/spinner_itemTypeGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@android:color/white"
+            android:textAlignment="textStart"/>
+    </FrameLayout>
+
 
     <TextView
         android:id="@+id/tvTestAmount"
@@ -33,7 +38,15 @@
         android:text="@string/how_many_calculations"
         android:textColor="@android:color/white"
         android:textSize="18sp"
-        android:layout_marginVertical="10dp"/>
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/calculation_leaderboard"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        android:layout_marginBottom="10dp"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -46,44 +59,44 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintTop_toTopOf="parent">
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:buttonTint="@android:color/white"
-                android:text="@string/thirty"
-                android:textColor="@android:color/white"
-                android:textSize="16sp" />
+<!--            <RadioButton-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:buttonTint="@android:color/white"-->
+<!--                android:text="@string/thirty"-->
+<!--                android:textColor="@android:color/white"-->
+<!--                android:textSize="16sp" />-->
 
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:buttonTint="@android:color/white"
-                android:text="@string/fifty"
-                android:textColor="@android:color/white"
-                android:textSize="16sp" />
+<!--            <RadioButton-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:buttonTint="@android:color/white"-->
+<!--                android:text="@string/fifty"-->
+<!--                android:textColor="@android:color/white"-->
+<!--                android:textSize="16sp" />-->
 
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:buttonTint="@android:color/white"
-                android:text="@string/hundred"
-                android:textColor="@android:color/white"
-                android:textSize="16sp" />
+<!--            <RadioButton-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:buttonTint="@android:color/white"-->
+<!--                android:text="@string/hundred"-->
+<!--                android:textColor="@android:color/white"-->
+<!--                android:textSize="16sp" />-->
 
-            <RadioButton
-                android:id="@+id/rbCustom"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:buttonTint="@android:color/white"
-                android:text="@string/custom"
-                android:textColor="@android:color/white"
-                android:textSize="16sp" />
+<!--            <RadioButton-->
+<!--                android:id="@+id/rbCustom"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:buttonTint="@android:color/white"-->
+<!--                android:text="@string/custom"-->
+<!--                android:textColor="@android:color/white"-->
+<!--                android:textSize="16sp" />-->
         </RadioGroup>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     <LinearLayout
-        android:id="@+id/customNumberLayout"
+        android:id="@+id/customAmountLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"

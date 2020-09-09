@@ -1,10 +1,45 @@
-1. activity:
-- mód kiválasztása: A) time trial
-					B) időre beírni, meddig sikerül elmenni
+//package hu.respawncontrol.data;
+//
+//import android.app.Application;
+//
+//import androidx.annotation.NonNull;
+//import androidx.lifecycle.AndroidViewModel;
+//
+//import java.util.ArrayList;
+//import java.util.List;
+//
+//import hu.respawncontrol.data.room.entity.Item;
+//import hu.respawncontrol.data.room.entity.ItemType;
+//
+//public class TimeTrialViewModel extends AndroidViewModel {
+//    private Repository repository;
+//    private List<ItemType> itemTypes;
+//
+//    public TimeTrialViewModel(@NonNull Application application) {
+//        super(application);
+//        repository = new Repository(application);
+//    }
+//
+//    public List<ItemType> getItemTypesByIds(List<Integer> itemTypeIds) {
+//        if(itemTypes == null) {
+//            itemTypes = new ArrayList<>();
+//            loadItemTypesByIds(itemTypeIds);
+//        }
+//        return itemTypes;
+//    }
+//
+//    private void loadItemTypesByIds(List<Integer> itemTypeIds) {
+//        for(Integer id : itemTypeIds) {
+//            itemTypes.add(repository.getItemTypeById(id));
+//        }
+//    }
+//
+//    public List<Item> getItemsByItemTypeId(int id) {
+//        return repository.getItemsByItemTypeId(id);
+//    }
+//}
 
-A/1. activity:				
-- time trial: választani hányat adjon (30, 50, 100 leaderboardosak vagy saját szám leaderboard nélkül)
 
 
-
-B/1. activity:
+Debug client ID:
+221491594255-giu1011681gpjb4jflh6ofmcecvv2brt.apps.googleusercontent.com
