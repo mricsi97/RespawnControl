@@ -23,20 +23,50 @@
         app:title="General"
         app:iconSpaceReserved="false">
         <SwitchPreferenceCompat
-            app:key="music"
+            app:key="music_toggle"
             app:title="Enable music"
             app:defaultValue="true"
             app:iconSpaceReserved="false" />
+        <SeekBarPreference
+            app:key="music_volume"
+            app:title="Music volume:"
+            app:dependency="music_toggle"
+            app:showSeekBarValue="true"
+            app:seekBarIncrement="1"
+            app:min="0"
+            android:max="100"
+            app:defaultValue="66"
+            app:iconSpaceReserved="false"/>
         <SwitchPreferenceCompat
             app:key="countdown_sound"
             app:title="Enable countdown sound"
             app:defaultValue="true"
             app:iconSpaceReserved="false" />
+        <SeekBarPreference
+            app:key="countdown_volume"
+            app:title="Countdown volume:"
+            app:dependency="countdown_sound"
+            app:showSeekBarValue="true"
+            app:seekBarIncrement="1"
+            app:min="0"
+            android:max="100"
+            app:defaultValue="100"
+            app:iconSpaceReserved="false"/>
         <SwitchPreferenceCompat
             app:key="item_sounds"
             app:title="Enable item pickup sounds"
             app:defaultValue="true"
             app:iconSpaceReserved="false" />
+        <SeekBarPreference
+            app:key="pickup_volume"
+            app:title="Pickup volume:"
+            app:dependency="item_sounds"
+            app:showSeekBarValue="true"
+            app:seekBarIncrement="1"
+            app:min="0"
+            android:max="100"
+            app:defaultValue="95"
+            app:iconSpaceReserved="false"/>
         <Preference
             app:key="version"
             app:title="Build version"

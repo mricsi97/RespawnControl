@@ -66,6 +66,9 @@ public class TimeTrialActivity extends AppCompatActivity implements TimeTrialOpt
 
     private SoundPool soundPool;
     HashMap<String, ArrayList<Integer>> soundIdLists = new HashMap<>();
+    private final static int MAX_VOLUME = 100;
+    private float countdownVolume;
+    private float itemSoundVolume;
 
     private int countdownSoundId;
 
@@ -89,6 +92,8 @@ public class TimeTrialActivity extends AppCompatActivity implements TimeTrialOpt
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         minuteHintEnabled = preferences.getBoolean("time_trial_minute_hint", false);
         itemSoundsEnabled = preferences.getBoolean("item_sounds", false);
+        countdownVolume = (float) (1 - (Math.log(MAX_VOLUME + 1 - preferences.getInt("countdown_volume", 100)) / Math.log(MAX_VOLUME)));
+        itemSoundVolume = (float) (1 - (Math.log(MAX_VOLUME + 1 - preferences.getInt("pickup_volume", 95)) / Math.log(MAX_VOLUME)));
         countdownSoundEnabled = preferences.getBoolean("countdown_sound", false);
         countdownSeconds = Integer.parseInt(preferences.getString("time_trial_countdown_seconds", "3"));
 
@@ -106,6 +111,8 @@ public class TimeTrialActivity extends AppCompatActivity implements TimeTrialOpt
             } else {
                 soundPool = new SoundPool(3, AudioManager.STREAM_MUSIC, 0);
             }
+
+            soundPool.play(countdownSoundId, 0, 0, 1, -1, 1f);
         }
 
         if(countdownSoundEnabled) {
@@ -202,7 +209,7 @@ public class TimeTrialActivity extends AppCompatActivity implements TimeTrialOpt
     protected void onStart() {
         super.onStart();
 
-        boolean musicEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("music", false);
+        boolean musicEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("music_toggle", false);
         if(musicEnabled) {
             MusicManager musicManager = MusicManager.getInstance(this);
             musicManager.onStart();
@@ -215,7 +222,7 @@ public class TimeTrialActivity extends AppCompatActivity implements TimeTrialOpt
         
         hideKeyboard();
 
-        boolean musicEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("music", false);
+        boolean musicEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("music_toggle", false);
         if(musicEnabled) {
             MusicManager musicManager = MusicManager.getInstance(this);
             musicManager.onStop();
@@ -327,7 +334,7 @@ public class TimeTrialActivity extends AppCompatActivity implements TimeTrialOpt
                     return;
                 }
                 if(countdownSoundEnabled) {
-                    soundPool.play(countdownSoundId, 1, 1, 0, 0, 1);
+                    soundPool.play(countdownSoundId, countdownVolume, countdownVolume, 0, 0, 1);
                 }
                 setCountdownText(String.valueOf(countDownSeconds));
                 try {
@@ -372,7 +379,7 @@ public class TimeTrialActivity extends AppCompatActivity implements TimeTrialOpt
                 ArrayList<Integer> soundIds = soundIdLists.get(item.getName());
                 if(soundIds != null) {
                     for(Integer soundId : soundIds) {
-                        soundPool.play(soundId, 1, 1, 0, 0, 1);
+                        soundPool.play(soundId, itemSoundVolume, itemSoundVolume, 0, 0, 1);
                     }
                 }
             }

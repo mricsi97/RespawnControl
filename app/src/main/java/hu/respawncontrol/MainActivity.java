@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity /*implements OnCompleteListe
     protected void onStart() {
         super.onStart();
 
-        boolean musicEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("music", false);
+        boolean musicEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("music_toggle", false);
         if(musicEnabled) {
             MusicManager musicManager = MusicManager.getInstance(this);
             musicManager.onStart();
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity /*implements OnCompleteListe
     protected void onStop() {
         super.onStop();
 
-        boolean musicEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("music", false);
+        boolean musicEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("music_toggle", false);
         if(musicEnabled) {
             MusicManager musicManager = MusicManager.getInstance(this);
             musicManager.onStop();

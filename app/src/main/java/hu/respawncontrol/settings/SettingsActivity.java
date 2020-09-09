@@ -28,13 +28,15 @@ public class SettingsActivity extends AppCompatActivity implements SharedPrefere
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if(key.equals("music")) {
-            boolean musicEnabled = sharedPreferences.getBoolean(key, false);
+        if(key.equals("music_toggle")) {
+            boolean musicEnabled = sharedPreferences.getBoolean(key, true);
             if(musicEnabled) {
                 MusicManager.getInstance(SettingsActivity.this).startMusic();
             } else {
                 MusicManager.getInstance(SettingsActivity.this).stopMusic();
             }
+        } else if(key.equals("music_volume")) {
+            MusicManager.getInstance(SettingsActivity.this).changeVolume();
         }
     }
 
@@ -42,7 +44,7 @@ public class SettingsActivity extends AppCompatActivity implements SharedPrefere
     protected void onStart() {
         super.onStart();
 
-        boolean musicEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("music", false);
+        boolean musicEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("music_toggle", false);
         if(musicEnabled) {
             MusicManager musicManager = MusicManager.getInstance(this);
             musicManager.onStart();
@@ -53,7 +55,7 @@ public class SettingsActivity extends AppCompatActivity implements SharedPrefere
     protected void onStop() {
         super.onStop();
 
-        boolean musicEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("music", false);
+        boolean musicEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("music_toggle", false);
         if(musicEnabled) {
             MusicManager musicManager = MusicManager.getInstance(this);
             musicManager.onStop();
