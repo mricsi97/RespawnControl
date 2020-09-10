@@ -13,7 +13,7 @@
             android:value="@string/app_id" />
         <meta-data android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version"/>
-        <activity android:name=".MainActivity">
+        <activity android:name=".view.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,9 +21,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TimeTrialActivity"
-            android:windowSoftInputMode="stateAlwaysVisible"></activity>
-        <activity android:name=".settings.SettingsActivity" />
+            android:name=".view.TimeTrialActivity"
+            android:windowSoftInputMode="stateAlwaysVisible">
+        </activity>
+        <activity android:name=".view.SettingsActivity" />
     </application>
 
 </manifest>

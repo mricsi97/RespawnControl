@@ -8,7 +8,7 @@
         app:iconSpaceReserved="false">
         <SwitchPreferenceCompat
             app:key="time_trial_minute_hint"
-            app:title="Enable minute hint"
+            app:title="Minute hint"
             app:defaultValue="false"
             app:iconSpaceReserved="false"/>
         <EditTextPreference
@@ -25,12 +25,12 @@
         app:iconSpaceReserved="false">
         <SwitchPreferenceCompat
             app:key="music_toggle"
-            app:title="Enable music"
+            app:title="Music"
             app:defaultValue="true"
             app:iconSpaceReserved="false" />
         <SeekBarPreference
             app:key="music_volume"
-            app:title="Music volume:"
+            app:summary="Music volume"
             app:dependency="music_toggle"
             app:showSeekBarValue="true"
             app:seekBarIncrement="1"
@@ -40,12 +40,12 @@
             app:iconSpaceReserved="false"/>
         <SwitchPreferenceCompat
             app:key="countdown_sound"
-            app:title="Enable countdown sound"
+            app:title="Countdown sound"
             app:defaultValue="true"
             app:iconSpaceReserved="false" />
         <SeekBarPreference
             app:key="countdown_volume"
-            app:title="Countdown volume:"
+            app:summary="Countdown volume"
             app:dependency="countdown_sound"
             app:showSeekBarValue="true"
             app:seekBarIncrement="1"
@@ -55,12 +55,12 @@
             app:iconSpaceReserved="false"/>
         <SwitchPreferenceCompat
             app:key="item_sounds"
-            app:title="Enable item pickup sounds"
+            app:title="Item pickup sounds"
             app:defaultValue="true"
             app:iconSpaceReserved="false" />
         <SeekBarPreference
             app:key="pickup_volume"
-            app:title="Pickup volume:"
+            app:summary="Pickup volume"
             app:dependency="item_sounds"
             app:showSeekBarValue="true"
             app:seekBarIncrement="1"
@@ -70,7 +70,7 @@
             app:iconSpaceReserved="false"/>
         <SwitchPreferenceCompat
             app:key="voice_lines"
-            app:title="Enable voice lines for powerups"
+            app:title="Voice lines for powerups"
             app:defaultValue="true"
             app:iconSpaceReserved="false" />
     </PreferenceCategory>
