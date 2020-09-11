@@ -1,4 +1,4 @@
-package hu.respawncontrol.view;
+package hu.respawncontrol.view.fragment;
 
 import android.os.Bundle;
 

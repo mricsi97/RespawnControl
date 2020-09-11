@@ -1,5 +1,6 @@
 package hu.respawncontrol.model.room.entity;
 
+import androidx.annotation.Nullable;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
@@ -9,11 +10,12 @@ public class Result {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
+    @Nullable
     private Long solveTime;
     private int itemId;
     private Long date;
 
-    public Result(Long solveTime, int itemId, Long date) {
+    public Result(@Nullable Long solveTime, int itemId, Long date) {
         this.solveTime = solveTime;
         this.itemId = itemId;
         this.date = date;
@@ -27,7 +29,7 @@ public class Result {
         return id;
     }
 
-    public Long getSolveTime() {
+    public @Nullable Long getSolveTime() {
         return solveTime;
     }
 

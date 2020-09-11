@@ -26,14 +26,6 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ResultView
 
     private SimpleDateFormat timeFormatter = new SimpleDateFormat("ss.SS", Locale.ROOT);
 
-    public void setResults(ArrayList<Result> results) {
-        this.results = results;
-    }
-
-    public void setTestedItems(ArrayList<Item> testedItems) {
-        this.testedItems = testedItems;
-    }
-
     @NonNull
     @Override
     public ResultViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -52,11 +44,20 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ResultView
         holder.tvTestNumber.setText((position+1) + ".");
         holder.tvSolveTime.setText(timeFormatter.format(solveTime));
 
+        // Set image
         Resources res = holder.itemView.getContext().getResources();
         Drawable image = res.getDrawable(item.getImageResourceId());
         holder.ivItem.setImageDrawable(image);
 
         holder.tvItemName.setText(item.getName());
+    }
+
+    public void setResults(ArrayList<Result> results) {
+        this.results = results;
+    }
+
+    public void setTestedItems(ArrayList<Item> testedItems) {
+        this.testedItems = testedItems;
     }
 
     @Override
@@ -65,7 +66,6 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ResultView
     }
 
     public static class ResultViewHolder extends RecyclerView.ViewHolder {
-
         private TextView tvTestNumber;
         private TextView tvSolveTime;
         private ImageView ivItem;

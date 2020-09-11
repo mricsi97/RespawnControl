@@ -59,38 +59,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintTop_toTopOf="parent">
-<!--            <RadioButton-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:buttonTint="@android:color/white"-->
-<!--                android:text="@string/thirty"-->
-<!--                android:textColor="@android:color/white"-->
-<!--                android:textSize="16sp" />-->
-
-<!--            <RadioButton-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:buttonTint="@android:color/white"-->
-<!--                android:text="@string/fifty"-->
-<!--                android:textColor="@android:color/white"-->
-<!--                android:textSize="16sp" />-->
-
-<!--            <RadioButton-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:buttonTint="@android:color/white"-->
-<!--                android:text="@string/hundred"-->
-<!--                android:textColor="@android:color/white"-->
-<!--                android:textSize="16sp" />-->
-
-<!--            <RadioButton-->
-<!--                android:id="@+id/rbCustom"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:buttonTint="@android:color/white"-->
-<!--                android:text="@string/custom"-->
-<!--                android:textColor="@android:color/white"-->
-<!--                android:textSize="16sp" />-->
         </RadioGroup>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -1,4 +1,4 @@
-package hu.respawncontrol.view;
+package hu.respawncontrol.view.fragment;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 
 import hu.respawncontrol.R;
+import hu.respawncontrol.view.activity.TimeTrialActivity;
 import hu.respawncontrol.view.adapter.ResultAdapter;
 import hu.respawncontrol.viewmodel.TimeTrialViewModel;
 import hu.respawncontrol.model.room.entity.Item;

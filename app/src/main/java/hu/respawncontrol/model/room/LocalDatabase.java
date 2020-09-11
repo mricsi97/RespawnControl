@@ -30,7 +30,7 @@ import hu.respawncontrol.model.room.entity.Result;
 import hu.respawncontrol.model.room.entity.Score;
 
 @androidx.room.Database(entities = {GameMode.class, Difficulty.class, Item.class, ItemType.class, ItemCrossItemType.class,
-        ItemTypeGroup.class, ItemTypeCrossItemTypeGroup.class, Leaderboard.class, Result.class, Score.class}, version = 4)
+        ItemTypeGroup.class, ItemTypeCrossItemTypeGroup.class, Leaderboard.class, Result.class, Score.class}, version = 5)
 @TypeConverters({Converters.class})
 public abstract class LocalDatabase extends RoomDatabase {
 

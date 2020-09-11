@@ -1,4 +1,4 @@
-package hu.respawncontrol.view;
+package hu.respawncontrol.view.activity;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,6 +9,7 @@ import androidx.preference.PreferenceManager;
 
 import hu.respawncontrol.helper.MusicManager;
 import hu.respawncontrol.R;
+import hu.respawncontrol.view.fragment.SettingsFragment;
 
 public class SettingsActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener;

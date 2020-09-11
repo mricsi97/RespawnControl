@@ -5,7 +5,7 @@
     <string name="how_many_calculations">How many calculations would you like to do?</string>
     <string name="calculation_leaderboard">(There is no leaderboard for custom amount.)</string>
     <string name="what_types_of_items">What types of items to include?</string>
-<!--    <string name="item_type_leaderboard">(Tick only and every type with \"L\" mark to appear in leaderboards.)</string>-->
+    <!--    <string name="item_type_leaderboard">(Tick only and every type with \"L\" mark to appear in leaderboards.)</string>-->
     <string name="weapons">Weapons</string>
     <string name="other_health">Other Health</string>
     <string name="mega_health">Mega Health</string>
@@ -21,6 +21,10 @@
     <string name="sign_in">Sign In</string>
     <string name="signin_other_error">Sign in failed for unknown reason.</string>
     <string name="title_activity_leaderboard">LeaderboardActivity</string>
-    <string name="tab_text_1">Tab 1</string>
-    <string name="tab_text_2">Tab 2</string>
+    <string name="title_activity_stats">StatsActivity</string>
+    <string name="stats">Stats</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tab_title_item_stats">Items</string>
+    <string name="tab_title_scores">Scores</string>
 </resources>

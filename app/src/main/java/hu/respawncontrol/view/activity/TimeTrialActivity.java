@@ -1,4 +1,4 @@
-package hu.respawncontrol.view;
+package hu.respawncontrol.view.activity;
 
 import android.content.SharedPreferences;
 import android.media.AudioAttributes;
@@ -30,6 +30,8 @@ import java.util.Locale;
 
 import hu.respawncontrol.helper.MusicManager;
 import hu.respawncontrol.R;
+import hu.respawncontrol.view.fragment.TimeTrialOptionsDialog;
+import hu.respawncontrol.view.fragment.TimeTrialResultDialog;
 import hu.respawncontrol.viewmodel.TimeTrialViewModel;
 import hu.respawncontrol.model.room.entity.Item;
 
