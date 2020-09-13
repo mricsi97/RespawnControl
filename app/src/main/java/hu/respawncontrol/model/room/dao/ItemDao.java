@@ -22,15 +22,9 @@ public interface ItemDao {
 
     @Query("SELECT * " +
             "FROM Item JOIN Result ON Item.itemId = Result.itemId " +
-            "WHERE Result.date >= :currentDate - 604800000 " +
+            "WHERE Result.date BETWEEN :fromTime AND :toTime " +
             "GROUP BY Item.itemId")
-    LiveData<List<Item>> getItemsHavingResultsPastWeek(Long currentDate);
-
-    @Query("SELECT * " +
-            "FROM Item JOIN Result ON Item.itemId = Result.itemId " +
-            "WHERE Result.date >= :currentDate - 7257600000 " +
-            "GROUP BY Item.itemId")
-    LiveData<List<Item>> getItemsHavingResultsPastSeason(Long currentDate);
+    LiveData<List<Item>> getItemsHavingResultsInTimePeriod(Long fromTime, Long toTime);
 
     @Query("SELECT * FROM Item INNER JOIN ItemCrossItemType " +
             "ON Item.itemId = ItemCrossItemType.itemId " +

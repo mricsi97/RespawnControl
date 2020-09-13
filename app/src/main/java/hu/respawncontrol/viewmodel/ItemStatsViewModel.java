@@ -9,7 +9,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Observer;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -20,7 +19,9 @@ import hu.respawncontrol.model.room.entity.Item;
 public class ItemStatsViewModel extends AndroidViewModel {
     private Repository repository;
 
-    private Long currentDate;
+    private Long currentTime;
+    private Long weekAgoTime;
+    private Long threeMonthsAgoTime;
 
     private LiveData<List<Item>> allItems;
     private LiveData<List<Item>> itemsPastWeek;
@@ -44,7 +45,9 @@ public class ItemStatsViewModel extends AndroidViewModel {
         super(application);
 
         repository = new Repository(application);
-        currentDate = Calendar.getInstance().getTime().getTime();
+        currentTime = Calendar.getInstance().getTime().getTime();
+        weekAgoTime = currentTime - 604800000L;
+        threeMonthsAgoTime = currentTime - 7257600000L;
     }
 
     public LiveData<List<Item>> getItemsHavingResults(int tabPosition) {
@@ -94,9 +97,9 @@ public class ItemStatsViewModel extends AndroidViewModel {
                         }
                     }
                     mediator.setValue(zippedObjects);
-//                    for(int i = 0; i < liveDatas.length; i++) {
-//                        mediator.removeSource(liveDatas[i]);
-//                    }
+                    for(int i = 0; i < liveDatas.length; i++) {
+                        mediator.removeSource(liveDatas[i]);
+                    }
                 }
             });
         }
@@ -112,14 +115,14 @@ public class ItemStatsViewModel extends AndroidViewModel {
 
     private LiveData<List<Item>> getItemsHavingResultsPastWeek() {
         if(itemsPastWeek == null) {
-            itemsPastWeek = repository.getItemsHavingResultsPastWeek(currentDate);
+            itemsPastWeek = repository.getItemsHavingResultsInTimePeriod(weekAgoTime, currentTime);
         }
         return itemsPastWeek;
     }
 
     private LiveData<List<Item>> getItemsHavingResultsPastSeason() {
         if(itemsPastSeason == null) {
-            itemsPastSeason = repository.getItemsHavingResultsPastSeason(currentDate);
+            itemsPastSeason = repository.getItemsHavingResultsInTimePeriod(threeMonthsAgoTime, currentTime);
         }
         return itemsPastSeason;
     }
@@ -147,42 +150,42 @@ public class ItemStatsViewModel extends AndroidViewModel {
 
     private LiveData<List<Long>> getAverageTimesPastWeek() {
         if(averageLiveDataWeek == null) {
-            averageLiveDataWeek = repository.getAverageTimesPastWeek(currentDate);
+            averageLiveDataWeek = repository.getAverageTimesInTimePeriod(weekAgoTime, currentTime);
         }
         return averageLiveDataWeek;
     }
 
     private LiveData<List<Long>> getBestTimesPastWeek() {
         if(bestLiveDataWeek == null) {
-            bestLiveDataWeek = repository.getBestTimesPastWeek(currentDate);
+            bestLiveDataWeek = repository.getBestTimesInTimePeriod(weekAgoTime, currentTime);
         }
         return bestLiveDataWeek;
     }
 
     private LiveData<List<Long>> getWorstTimesPastWeek() {
         if(worstLiveDataWeek == null) {
-            worstLiveDataWeek = repository.getWorstTimesPastWeek(currentDate);
+            worstLiveDataWeek = repository.getWorstTimesInTimePeriod(weekAgoTime, currentTime);
         }
         return worstLiveDataWeek;
     }
 
     private LiveData<List<Long>> getAverageTimesPastSeason() {
         if(averageLiveDataSeason == null) {
-            averageLiveDataSeason = repository.getAverageTimesPastSeason(currentDate);
+            averageLiveDataSeason = repository.getAverageTimesInTimePeriod(threeMonthsAgoTime, currentTime);
         }
         return averageLiveDataSeason;
     }
 
     private LiveData<List<Long>> getBestTimesPastSeason() {
         if(bestLiveDataSeason == null) {
-            bestLiveDataSeason = repository.getBestTimesPastSeason(currentDate);
+            bestLiveDataSeason = repository.getBestTimesInTimePeriod(threeMonthsAgoTime, currentTime);
         }
         return bestLiveDataSeason;
     }
 
     private LiveData<List<Long>> getWorstTimesPastSeason() {
         if(worstLiveDataSeason == null) {
-            worstLiveDataSeason = repository.getWorstTimesPastSeason(currentDate);
+            worstLiveDataSeason = repository.getWorstTimesInTimePeriod(threeMonthsAgoTime, currentTime);
         }
         return worstLiveDataSeason;
     }

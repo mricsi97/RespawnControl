@@ -59,8 +59,8 @@ public class Repository {
         return items;
     }
 
-    public LiveData<List<Item>> getItemsHavingResultsPastWeek(Long currentDate) {
-        AsyncTask<Long, Void, LiveData<List<Item>>> task = new GetItemsHavingResultsPastWeekAsyncTask(itemDao).execute(currentDate);
+    public LiveData<List<Item>> getItemsHavingResultsInTimePeriod(Long fromTime, Long toTime) {
+        AsyncTask<Long, Void, LiveData<List<Item>>> task = new GetItemsHavingResultsInTimePeriodAsyncTask(itemDao).execute(fromTime, toTime);
         LiveData<List<Item>> items = null;
         try {
             items = task.get();
@@ -70,16 +70,27 @@ public class Repository {
         return items;
     }
 
-    public LiveData<List<Item>> getItemsHavingResultsPastSeason(Long currentDate) {
-        AsyncTask<Long, Void, LiveData<List<Item>>> task = new GetItemsHavingResultsPastSeasonAsyncTask(itemDao).execute(currentDate);
-        LiveData<List<Item>> items = null;
-        try {
-            items = task.get();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        return items;
-    }
+//    public LiveData<List<Item>> getItemsHavingResultsPastWeek(Long currentDate) {
+//        AsyncTask<Long, Void, LiveData<List<Item>>> task = new GetItemsHavingResultsPastWeekAsyncTask(itemDao).execute(currentDate);
+//        LiveData<List<Item>> items = null;
+//        try {
+//            items = task.get();
+//        } catch (ExecutionException | InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        return items;
+//    }
+//
+//    public LiveData<List<Item>> getItemsHavingResultsPastSeason(Long currentDate) {
+//        AsyncTask<Long, Void, LiveData<List<Item>>> task = new GetItemsHavingResultsPastSeasonAsyncTask(itemDao).execute(currentDate);
+//        LiveData<List<Item>> items = null;
+//        try {
+//            items = task.get();
+//        } catch (ExecutionException | InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        return items;
+//    }
 
     public List<Item> getItemsByItemTypeId(int id) {
         AsyncTask<Integer, Void, List<Item>> task = new GetItemsByItemTypeIdAsyncTask(itemDao).execute(id);
@@ -188,8 +199,8 @@ public class Repository {
         return worstTimes;
     }
 
-    public LiveData<List<Long>> getAverageTimesPastWeek(Long currentDate) {
-        AsyncTask<Long, Void, LiveData<List<Long>>> task = new GetAverageTimesPastWeekAsyncTask(resultDao).execute(currentDate);
+    public LiveData<List<Long>> getAverageTimesInTimePeriod(Long fromTime, Long toTime) {
+        AsyncTask<Long, Void, LiveData<List<Long>>> task = new GetAverageTimesInTimePeriodAsyncTask(resultDao).execute(fromTime, toTime);
         LiveData<List<Long>> averageTimes = null;
         try {
             averageTimes = task.get();
@@ -199,8 +210,8 @@ public class Repository {
         return averageTimes;
     }
 
-    public LiveData<List<Long>> getBestTimesPastWeek(Long currentDate) {
-        AsyncTask<Long, Void, LiveData<List<Long>>> task = new GetBestTimesPastWeekAsyncTask(resultDao).execute(currentDate);
+    public LiveData<List<Long>> getBestTimesInTimePeriod(Long fromTime, Long toTime) {
+        AsyncTask<Long, Void, LiveData<List<Long>>> task = new GetBestTimesInTimePeriodAsyncTask(resultDao).execute(fromTime, toTime);
         LiveData<List<Long>> bestTimes = null;
         try {
             bestTimes = task.get();
@@ -210,8 +221,8 @@ public class Repository {
         return bestTimes;
     }
 
-    public LiveData<List<Long>> getWorstTimesPastWeek(Long currentDate) {
-        AsyncTask<Long, Void, LiveData<List<Long>>> task = new GetWorstTimesPastWeekAsyncTask(resultDao).execute(currentDate);
+    public LiveData<List<Long>> getWorstTimesInTimePeriod(Long fromTime, Long toTime) {
+        AsyncTask<Long, Void, LiveData<List<Long>>> task = new GetWorstTimesInTimePeriodAsyncTask(resultDao).execute(fromTime, toTime);
         LiveData<List<Long>> worstTimes = null;
         try {
             worstTimes = task.get();
@@ -221,38 +232,38 @@ public class Repository {
         return worstTimes;
     }
 
-    public LiveData<List<Long>> getAverageTimesPastSeason(Long currentDate) {
-        AsyncTask<Long, Void, LiveData<List<Long>>> task = new GetAverageTimesPastSeasonAsyncTask(resultDao).execute(currentDate);
-        LiveData<List<Long>> averageTimes = null;
-        try {
-            averageTimes = task.get();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        return averageTimes;
-    }
-
-    public LiveData<List<Long>> getBestTimesPastSeason(Long currentDate) {
-        AsyncTask<Long, Void, LiveData<List<Long>>> task = new GetBestTimesPastSeasonAsyncTask(resultDao).execute(currentDate);
-        LiveData<List<Long>> bestTimes = null;
-        try {
-            bestTimes = task.get();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        return bestTimes;
-    }
-
-    public LiveData<List<Long>> getWorstTimesPastSeason(Long currentDate) {
-        AsyncTask<Long, Void, LiveData<List<Long>>> task = new GetWorstTimesPastSeasonAsyncTask(resultDao).execute(currentDate);
-        LiveData<List<Long>> worstTimes = null;
-        try {
-            worstTimes = task.get();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        return worstTimes;
-    }
+//    public LiveData<List<Long>> getAverageTimesPastSeason(Long currentDate) {
+//        AsyncTask<Long, Void, LiveData<List<Long>>> task = new GetAverageTimesPastSeasonAsyncTask(resultDao).execute(currentDate);
+//        LiveData<List<Long>> averageTimes = null;
+//        try {
+//            averageTimes = task.get();
+//        } catch (ExecutionException | InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        return averageTimes;
+//    }
+//
+//    public LiveData<List<Long>> getBestTimesPastSeason(Long currentDate) {
+//        AsyncTask<Long, Void, LiveData<List<Long>>> task = new GetBestTimesPastSeasonAsyncTask(resultDao).execute(currentDate);
+//        LiveData<List<Long>> bestTimes = null;
+//        try {
+//            bestTimes = task.get();
+//        } catch (ExecutionException | InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        return bestTimes;
+//    }
+//
+//    public LiveData<List<Long>> getWorstTimesPastSeason(Long currentDate) {
+//        AsyncTask<Long, Void, LiveData<List<Long>>> task = new GetWorstTimesPastSeasonAsyncTask(resultDao).execute(currentDate);
+//        LiveData<List<Long>> worstTimes = null;
+//        try {
+//            worstTimes = task.get();
+//        } catch (ExecutionException | InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        return worstTimes;
+//    }
 
     public void insertScore(Score score) {
         new InsertScoreAsyncTask(scoreDao).execute(score);
@@ -275,29 +286,44 @@ public class Repository {
         }
     }
 
-    protected static class GetItemsHavingResultsPastWeekAsyncTask extends AsyncTask<Long, Void, LiveData<List<Item>>> {
+//    protected static class GetItemsHavingResultsPastWeekAsyncTask extends AsyncTask<Long, Void, LiveData<List<Item>>> {
+//        private ItemDao itemDao;
+//
+//        public GetItemsHavingResultsPastWeekAsyncTask(ItemDao itemDao) {
+//            this.itemDao = itemDao;
+//        }
+//
+//        @Override
+//        protected LiveData<List<Item>> doInBackground(Long... longs) {
+//            return itemDao.getItemsHavingResultsPastWeek(longs[0]);
+//        }
+//    }
+
+//    protected static class GetItemsHavingResultsPastSeasonAsyncTask extends AsyncTask<Long, Void, LiveData<List<Item>>> {
+//        private ItemDao itemDao;
+//
+//        public GetItemsHavingResultsPastSeasonAsyncTask(ItemDao itemDao) {
+//            this.itemDao = itemDao;
+//        }
+//
+//        @Override
+//        protected LiveData<List<Item>> doInBackground(Long... longs) {
+//            return itemDao.getItemsHavingResultsPastSeason(longs[0]);
+//        }
+//    }
+
+    protected static class GetItemsHavingResultsInTimePeriodAsyncTask extends AsyncTask<Long, Void, LiveData<List<Item>>> {
         private ItemDao itemDao;
 
-        public GetItemsHavingResultsPastWeekAsyncTask(ItemDao itemDao) {
+        public GetItemsHavingResultsInTimePeriodAsyncTask(ItemDao itemDao) {
             this.itemDao = itemDao;
         }
 
         @Override
         protected LiveData<List<Item>> doInBackground(Long... longs) {
-            return itemDao.getItemsHavingResultsPastWeek(longs[0]);
-        }
-    }
-
-    protected static class GetItemsHavingResultsPastSeasonAsyncTask extends AsyncTask<Long, Void, LiveData<List<Item>>> {
-        private ItemDao itemDao;
-
-        public GetItemsHavingResultsPastSeasonAsyncTask(ItemDao itemDao) {
-            this.itemDao = itemDao;
-        }
-
-        @Override
-        protected LiveData<List<Item>> doInBackground(Long... longs) {
-            return itemDao.getItemsHavingResultsPastSeason(longs[0]);
+            Long fromTime = longs[0];
+            Long toTime = longs[1];
+            return itemDao.getItemsHavingResultsInTimePeriod(fromTime, toTime);
         }
     }
 
@@ -446,83 +472,51 @@ public class Repository {
         }
     }
 
-    protected static class GetAverageTimesPastWeekAsyncTask extends AsyncTask<Long, Void, LiveData<List<Long>>> {
+    protected static class GetAverageTimesInTimePeriodAsyncTask extends AsyncTask<Long, Void, LiveData<List<Long>>> {
         private ResultDao resultDao;
 
-        public GetAverageTimesPastWeekAsyncTask(ResultDao resultDao) {
+        public GetAverageTimesInTimePeriodAsyncTask(ResultDao resultDao) {
             this.resultDao = resultDao;
         }
 
         @Override
         protected LiveData<List<Long>> doInBackground(Long... longs) {
-            return resultDao.getAverageTimesPastWeek(longs[0]);
+            Long fromTime = longs[0];
+            Long toTime = longs[1];
+            return resultDao.getAverageTimesInTimePeriod(fromTime, toTime);
         }
     }
 
-    protected static class GetBestTimesPastWeekAsyncTask extends AsyncTask<Long, Void, LiveData<List<Long>>> {
+    protected static class GetBestTimesInTimePeriodAsyncTask extends AsyncTask<Long, Void, LiveData<List<Long>>> {
         private ResultDao resultDao;
 
-        public GetBestTimesPastWeekAsyncTask(ResultDao resultDao) {
+        public GetBestTimesInTimePeriodAsyncTask(ResultDao resultDao) {
             this.resultDao = resultDao;
         }
 
         @Override
         protected LiveData<List<Long>> doInBackground(Long... longs) {
-            return resultDao.getBestTimesPastWeek(longs[0]);
+            Long fromTime = longs[0];
+            Long toTime = longs[1];
+            return resultDao.getBestTimesInTimePeriod(fromTime, toTime);
         }
     }
 
-    protected static class GetWorstTimesPastWeekAsyncTask extends AsyncTask<Long, Void, LiveData<List<Long>>> {
+    protected static class GetWorstTimesInTimePeriodAsyncTask extends AsyncTask<Long, Void, LiveData<List<Long>>> {
         private ResultDao resultDao;
 
-        public GetWorstTimesPastWeekAsyncTask(ResultDao resultDao) {
+        public GetWorstTimesInTimePeriodAsyncTask(ResultDao resultDao) {
             this.resultDao = resultDao;
         }
 
         @Override
         protected LiveData<List<Long>> doInBackground(Long... longs) {
-            return resultDao.getWorstTimesPastWeek(longs[0]);
+            Long fromTime = longs[0];
+            Long toTime = longs[1];
+            return resultDao.getWorstTimesInTimePeriod(fromTime, toTime);
         }
     }
 
-    protected static class GetAverageTimesPastSeasonAsyncTask extends AsyncTask<Long, Void, LiveData<List<Long>>> {
-        private ResultDao resultDao;
-
-        public GetAverageTimesPastSeasonAsyncTask(ResultDao resultDao) {
-            this.resultDao = resultDao;
-        }
-
-        @Override
-        protected LiveData<List<Long>> doInBackground(Long... longs) {
-            return resultDao.getAverageTimesPastSeason(longs[0]);
-        }
-    }
-
-    protected static class GetBestTimesPastSeasonAsyncTask extends AsyncTask<Long, Void, LiveData<List<Long>>> {
-        private ResultDao resultDao;
-
-        public GetBestTimesPastSeasonAsyncTask(ResultDao resultDao) {
-            this.resultDao = resultDao;
-        }
-
-        @Override
-        protected LiveData<List<Long>> doInBackground(Long... longs) {
-            return resultDao.getBestTimesPastSeason(longs[0]);
-        }
-    }
-
-    protected static class GetWorstTimesPastSeasonAsyncTask extends AsyncTask<Long, Void, LiveData<List<Long>>> {
-        private ResultDao resultDao;
-
-        public GetWorstTimesPastSeasonAsyncTask(ResultDao resultDao) {
-            this.resultDao = resultDao;
-        }
-
-        @Override
-        protected LiveData<List<Long>> doInBackground(Long... longs) {
-            return resultDao.getWorstTimesPastSeason(longs[0]);
-        }
-    }
 
     protected static class InsertScoreAsyncTask extends AsyncTask<Score, Void, Void> {
         private ScoreDao scoreDao;

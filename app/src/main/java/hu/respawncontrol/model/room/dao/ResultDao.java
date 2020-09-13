@@ -32,37 +32,19 @@ public interface ResultDao {
 
     @Query("SELECT AVG(Result.solveTime) " +
             "FROM Result JOIN Item ON Result.itemId = Item.itemId " +
-            "WHERE Result.date >= :currentDate - 604800000 " +
+            "WHERE Result.date BETWEEN :fromTime AND :toTime " +
             "GROUP BY Item.itemId")
-    LiveData<List<Long>> getAverageTimesPastWeek(Long currentDate);
+    LiveData<List<Long>> getAverageTimesInTimePeriod(Long fromTime, Long toTime);
 
     @Query("SELECT MIN(Result.solveTime) " +
             "FROM Result JOIN Item ON Result.itemId = Item.itemId " +
-            "WHERE Result.date >= :currentDate - 604800000 " +
+            "WHERE Result.date BETWEEN :fromTime AND :toTime " +
             "GROUP BY Item.itemId")
-    LiveData<List<Long>> getBestTimesPastWeek(Long currentDate);
+    LiveData<List<Long>> getBestTimesInTimePeriod(Long fromTime, Long toTime);
 
     @Query("SELECT MAX(Result.solveTime) " +
             "FROM Result JOIN Item ON Result.itemId = Item.itemId " +
-            "WHERE Result.date >= :currentDate - 604800000 " +
+            "WHERE Result.date BETWEEN :fromTime AND :toTime " +
             "GROUP BY Item.itemId")
-    LiveData<List<Long>> getWorstTimesPastWeek(Long currentDate);
-
-    @Query("SELECT AVG(Result.solveTime) " +
-            "FROM Result JOIN Item ON Result.itemId = Item.itemId " +
-            "WHERE Result.date >= :currentDate - 7257600000 " +
-            "GROUP BY Item.itemId")
-    LiveData<List<Long>> getAverageTimesPastSeason(Long currentDate);
-
-    @Query("SELECT MIN(Result.solveTime) " +
-            "FROM Result JOIN Item ON Result.itemId = Item.itemId " +
-            "WHERE Result.date >= :currentDate - 7257600000 " +
-            "GROUP BY Item.itemId")
-    LiveData<List<Long>> getBestTimesPastSeason(Long currentDate);
-
-    @Query("SELECT MAX(Result.solveTime) " +
-            "FROM Result JOIN Item ON Result.itemId = Item.itemId " +
-            "WHERE Result.date >= :currentDate - 7257600000 " +
-            "GROUP BY Item.itemId")
-    LiveData<List<Long>> getWorstTimesPastSeason(Long currentDate);
+    LiveData<List<Long>> getWorstTimesInTimePeriod(Long fromTime, Long toTime);
 }
