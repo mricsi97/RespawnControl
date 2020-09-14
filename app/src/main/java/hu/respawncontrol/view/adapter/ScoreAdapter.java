@@ -22,7 +22,7 @@ public class ScoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     private boolean isTimeTrial;
 
-    private SimpleDateFormat dateFormatter = new SimpleDateFormat("yy/MM/dd HH:mm", Locale.ROOT);
+    private SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm ''yy/MM/dd", Locale.ROOT);
     private SimpleDateFormat timeTrialTimeFormatter = new SimpleDateFormat("m:ss.SS", Locale.ROOT);
     private SimpleDateFormat endlessTimeFormatter = new SimpleDateFormat("s.S", Locale.ROOT);
 
@@ -53,7 +53,7 @@ public class ScoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             Long time = score.getTime();
             int testAmount = score.getTestAmount();
 
-            ((ScoreViewHolder)holder).tvDate.setText("'" + dateFormatter.format(date));
+            ((ScoreViewHolder)holder).tvDate.setText(dateFormatter.format(date));
             if(isTimeTrial) {
                 ((ScoreViewHolder)holder).tvScore.setText(timeTrialTimeFormatter.format(time));
                 ((ScoreViewHolder)holder).tvDifficulty.setText(String.valueOf(testAmount));

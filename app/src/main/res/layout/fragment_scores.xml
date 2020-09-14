@@ -36,11 +36,11 @@
 
                 <Spinner
                     android:id="@+id/spinner_scores_gameMode"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@null"
                     android:fitsSystemWindows="true"
-                    android:backgroundTint="@android:color/white"
-                    android:textAlignment="textStart" />
+                    android:textAlignment="center" />
             </FrameLayout>
 
             <FrameLayout
@@ -53,10 +53,10 @@
 
                 <Spinner
                     android:id="@+id/spinner_scores_itemTypeGroup"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@null"
                     android:fitsSystemWindows="true"
-                    android:backgroundTint="@android:color/white"
                     android:textAlignment="textStart" />
             </FrameLayout>
 
@@ -70,10 +70,10 @@
 
                 <Spinner
                     android:id="@+id/spinner_scores_difficulty"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@null"
                     android:fitsSystemWindows="true"
-                    android:backgroundTint="@android:color/white"
                     android:textAlignment="textStart" />
             </FrameLayout>
 
@@ -89,86 +89,11 @@
                 android:tint="@android:color/white" />
         </LinearLayout>
 
-<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginVertical="20dp">-->
-
-<!--            <FrameLayout-->
-<!--                android:id="@+id/framelayout_scores_gameMode"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:background="@drawable/round_button_filled"-->
-<!--                app:layout_constraintTop_toTopOf="parent"-->
-<!--                app:layout_constraintEnd_toStartOf="@+id/framelayout_scores_itemTypeGroup"-->
-<!--                app:layout_constraintHorizontal_bias="0.5"-->
-<!--                app:layout_constraintStart_toStartOf="parent">-->
-
-<!--                <Spinner-->
-<!--                    android:id="@+id/spinner_scores_gameMode"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:fitsSystemWindows="true"-->
-<!--                    android:backgroundTint="@android:color/white"-->
-<!--                    android:textAlignment="textStart" />-->
-<!--            </FrameLayout>-->
-
-<!--            <FrameLayout-->
-<!--                android:id="@+id/framelayout_scores_itemTypeGroup"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:background="@drawable/round_button_filled"-->
-<!--                app:layout_constraintEnd_toStartOf="@+id/framelayout_scores_difficulty"-->
-<!--                app:layout_constraintHorizontal_bias="0.5"-->
-<!--                app:layout_constraintStart_toEndOf="@+id/framelayout_scores_gameMode"-->
-<!--                app:layout_constraintTop_toTopOf="@+id/framelayout_scores_gameMode">-->
-
-<!--                <Spinner-->
-<!--                    android:id="@+id/spinner_scores_itemTypeGroup"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:fitsSystemWindows="true"-->
-<!--                    android:backgroundTint="@android:color/white"-->
-<!--                    android:textAlignment="textStart" />-->
-<!--            </FrameLayout>-->
-
-<!--            <FrameLayout-->
-<!--                android:id="@+id/framelayout_scores_difficulty"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:background="@drawable/round_button_filled"-->
-<!--                app:layout_constraintEnd_toStartOf="@+id/btnSearch"-->
-<!--                app:layout_constraintHorizontal_bias="0.5"-->
-<!--                app:layout_constraintStart_toEndOf="@+id/framelayout_scores_itemTypeGroup"-->
-<!--                app:layout_constraintTop_toTopOf="@+id/framelayout_scores_itemTypeGroup">-->
-
-<!--                <Spinner-->
-<!--                    android:id="@+id/spinner_scores_difficulty"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:fitsSystemWindows="true"-->
-<!--                    android:backgroundTint="@android:color/white"-->
-<!--                    android:textAlignment="textStart" />-->
-<!--            </FrameLayout>-->
-
-<!--            <ImageButton-->
-<!--                android:id="@+id/btnSearch"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:background="@drawable/round_button_filled"-->
-<!--                android:padding="5dp"-->
-<!--                android:src="@drawable/ic_baseline_search_24"-->
-<!--                android:tint="@android:color/white"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintStart_toEndOf="@+id/framelayout_scores_difficulty"-->
-<!--                app:layout_constraintTop_toTopOf="@+id/framelayout_scores_difficulty" />-->
-<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
-
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerScores"
             android:background="@color/colorPrimaryDark"
             android:paddingBottom="5dp"
+            android:paddingEnd="15dp"
             android:layout_marginHorizontal="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">

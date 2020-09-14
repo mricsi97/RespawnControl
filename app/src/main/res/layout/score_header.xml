@@ -7,14 +7,6 @@
     android:weightSum="3">
 
     <TextView
-        android:id="@+id/tvDateHeader_scores"
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:textColor="@android:color/white"/>
-
-    <TextView
         android:id="@+id/tvScoreHeader_scores"
         android:layout_weight="1"
         android:layout_width="0dp"
@@ -24,6 +16,14 @@
 
     <TextView
         android:id="@+id/tvDifficultyHeader_scores"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textColor="@android:color/white"/>
+
+    <TextView
+        android:id="@+id/tvDateHeader_scores"
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="match_parent"
