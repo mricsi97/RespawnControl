@@ -17,13 +17,15 @@ public interface ItemDao {
 
     @Query("SELECT * " +
             "FROM Item JOIN Result ON Item.itemId = Result.itemId " +
-            "GROUP BY Item.itemId")
+            "GROUP BY Item.itemId " +
+            "ORDER BY Item.itemId")
     LiveData<List<Item>> getAllItemsHavingResults();
 
     @Query("SELECT * " +
             "FROM Item JOIN Result ON Item.itemId = Result.itemId " +
             "WHERE Result.date BETWEEN :fromTime AND :toTime " +
-            "GROUP BY Item.itemId")
+            "GROUP BY Item.itemId " +
+            "ORDER BY Item.itemId")
     LiveData<List<Item>> getItemsHavingResultsInTimePeriod(Long fromTime, Long toTime);
 
     @Query("SELECT * FROM Item INNER JOIN ItemCrossItemType " +

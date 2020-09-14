@@ -97,9 +97,7 @@ public class TimeTrialViewModel extends AndroidViewModel {
         this.pickupMoments.setValue(pickupMoments);
         this.respawnMoments.setValue(respawnMoments);
 
-        if(!selectedDifficulty.getName().equals("Custom")) {
-            setLeaderboard();
-        }
+        setLeaderboard();
     }
 
     private void setLeaderboard() {
@@ -129,9 +127,7 @@ public class TimeTrialViewModel extends AndroidViewModel {
     }
 
     public void saveScore() {
-        if(!selectedDifficulty.getName().equals("Custom")) {
-            repository.insertScore(new Score(solveTimeSum.getValue(), testItems.getValue().size(), leaderboard.getId(), date));
-        }
+        repository.insertScore(new Score(solveTimeSum.getValue(), testItems.getValue().size(), leaderboard.getId(), date));
     }
 
     public LiveData<List<ItemTypeGroupWithItemTypes>> getAllItemTypeGroupsWithItemTypes() {

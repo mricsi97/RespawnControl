@@ -1,5 +1,6 @@
 package hu.respawncontrol.view.adapter;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
@@ -24,7 +26,7 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ResultView
     private ArrayList<Result> results;
     private ArrayList<Item> testedItems;
 
-    private SimpleDateFormat timeFormatter = new SimpleDateFormat("ss.SS", Locale.ROOT);
+    private SimpleDateFormat timeFormatter = new SimpleDateFormat("s.SS", Locale.ROOT);
 
     @NonNull
     @Override
@@ -45,8 +47,10 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ResultView
         holder.tvSolveTime.setText(timeFormatter.format(solveTime));
 
         // Set image
-        Resources res = holder.itemView.getContext().getResources();
-        Drawable image = res.getDrawable(item.getImageResourceId());
+        Context context = holder.itemView.getContext();
+        Resources res = context.getResources();
+        Drawable image = ResourcesCompat.getDrawable(res, res.getIdentifier(item.getImageResourceName(),
+                "drawable", context.getPackageName()), null);
         holder.ivItem.setImageDrawable(image);
 
         holder.tvItemName.setText(item.getName());

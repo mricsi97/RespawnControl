@@ -3,16 +3,14 @@ package hu.respawncontrol.viewmodel;
 import android.app.Application;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.Observer;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import hu.respawncontrol.helper.HelperMethods;
 import hu.respawncontrol.model.Repository;
 import hu.respawncontrol.model.room.entity.Item;
 
@@ -62,48 +60,19 @@ public class ItemStatsViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<Long>[]> getItemStats(int tabPosition) {
-        setZip(tabPosition);
-        return itemStats;
-    }
-
-    private void setZip(int tabPosition) {
         switch (tabPosition) {
             case 0:
-                itemStats = zipLiveData(getAllAverageTimes(), getAllBestTimes(), getAllWorstTimes());
+                itemStats = HelperMethods.zipLiveData(getAllAverageTimes(), getAllBestTimes(), getAllWorstTimes());
                 break;
             case 1:
-                itemStats = zipLiveData(getAverageTimesPastWeek(), getBestTimesPastWeek(), getWorstTimesPastWeek());
+                itemStats = HelperMethods.zipLiveData(getAverageTimesPastWeek(), getBestTimesPastWeek(), getWorstTimesPastWeek());
                 break;
             default:
-                itemStats = zipLiveData(getAverageTimesPastSeason(), getBestTimesPastSeason(), getWorstTimesPastSeason());
+                itemStats = HelperMethods.zipLiveData(getAverageTimesPastSeason(), getBestTimesPastSeason(), getWorstTimesPastSeason());
                 break;
         }
-    }
 
-    private MediatorLiveData<List<Long>[]> zipLiveData(final LiveData<List<Long>>... liveDatas){
-        final List<Long>[] zippedObjects = new ArrayList[liveDatas.length];
-        final MediatorLiveData<List<Long>[]> mediator = new MediatorLiveData<>();
-        for(int i = 0; i < liveDatas.length; i++) {
-            final int index = i;
-            final LiveData<List<Long>> liveData = liveDatas[i];
-            mediator.addSource(liveData, new Observer<List<Long>>() {
-                @Override
-                public void onChanged(@Nullable List<Long> timeList) {
-                    zippedObjects[index] = timeList;
-
-                    for(int j = 0; j < zippedObjects.length; j++) {
-                        if(zippedObjects[j] == null) {
-                            return;
-                        }
-                    }
-                    mediator.setValue(zippedObjects);
-                    for(int i = 0; i < liveDatas.length; i++) {
-                        mediator.removeSource(liveDatas[i]);
-                    }
-                }
-            });
-        }
-        return mediator;
+        return itemStats;
     }
 
     private LiveData<List<Item>> getAllItemsHavingResults() {

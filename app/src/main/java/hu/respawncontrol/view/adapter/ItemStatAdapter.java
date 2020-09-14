@@ -1,5 +1,6 @@
 package hu.respawncontrol.view.adapter;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
@@ -21,6 +23,9 @@ import hu.respawncontrol.model.room.entity.Item;
 public class ItemStatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static final int TYPE_HEADER = 0;
     public static final int TYPE_ITEM = 1;
+
+    private boolean waitingForItems;
+    private boolean waitingForResults;
 
     private SimpleDateFormat timeFormatter = new SimpleDateFormat("ss.SS", Locale.ROOT);
 
@@ -55,8 +60,10 @@ public class ItemStatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             Long worst = getWorst(position);
 
             // Set image
-            Resources res = ((ItemStatViewHolder) holder).itemView.getContext().getResources();
-            Drawable image = res.getDrawable(item.getImageResourceId());
+            Context context = ((ItemStatViewHolder) holder).itemView.getContext();
+            Resources res = context.getResources();
+            Drawable image = ResourcesCompat.getDrawable(res, res.getIdentifier(item.getImageResourceName(),
+                    "drawable", context.getPackageName()), null);
             ((ItemStatViewHolder) holder).ivItem.setImageDrawable(image);
 
             ((ItemStatViewHolder)holder).tvAverage.setText(timeFormatter.format(average));
@@ -68,6 +75,31 @@ public class ItemStatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             ((HeaderViewHolder)holder).tvBestHeader.setText("Best");
             ((HeaderViewHolder)holder).tvWorstHeader.setText("Worst");
         }
+    }
+
+    public void setItems(List<Item> items) {
+        this.items = items;
+        waitingForItems = false;
+
+        if(!waitingForResults) {
+            notifyDataSetChanged();
+        }
+    }
+
+    public void setTimeLists(List<Long>[] timeLists) {
+        averageTimes = timeLists[0];
+        bestTimes = timeLists[1];
+        worstTimes = timeLists[2];
+        waitingForResults = false;
+
+        if(!waitingForItems) {
+            notifyDataSetChanged();
+        }
+    }
+
+    public void resetState() {
+        waitingForItems = true;
+        waitingForResults = true;
     }
 
     private Item getItem(int position) {
@@ -84,24 +116,6 @@ public class ItemStatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private Long getWorst(int position) {
         return worstTimes.get(position-1);
-    }
-
-    public void setItems(List<Item> items) {
-        this.items = items;
-    }
-
-//    public void setTimeLists(List<List<Long>> timeLists) {
-//        averageTimes = timeLists.get(0);
-//        bestTimes = timeLists.get(1);
-//        worstTimes = timeLists.get(2);
-//        notifyDataSetChanged();
-//    }
-
-    public void setTimeLists(List<Long>[] timeLists) {
-        averageTimes = timeLists[0];
-        bestTimes = timeLists[1];
-        worstTimes = timeLists[2];
-        notifyDataSetChanged();
     }
 
     @Override
@@ -133,10 +147,10 @@ public class ItemStatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public ItemStatViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            ivItem = (ImageView) itemView.findViewById(R.id.ivItem_stats);
-            tvAverage = (TextView) itemView.findViewById(R.id.tvAverage);
-            tvBest = (TextView) itemView.findViewById(R.id.tvBest);
-            tvWorst = (TextView) itemView.findViewById(R.id.tvWorst);
+            ivItem = (ImageView) itemView.findViewById(R.id.ivItem_itemStats);
+            tvAverage = (TextView) itemView.findViewById(R.id.tvAverage_itemStats);
+            tvBest = (TextView) itemView.findViewById(R.id.tvBest_itemStats);
+            tvWorst = (TextView) itemView.findViewById(R.id.tvWorst_itemStats);
         }
     }
 
@@ -149,10 +163,10 @@ public class ItemStatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public HeaderViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            tvItemHeader = (TextView) itemView.findViewById(R.id.tvItemHeader);
-            tvAverageHeader = (TextView) itemView.findViewById(R.id.tvAverageHeader);
-            tvBestHeader = (TextView) itemView.findViewById(R.id.tvBestHeader);
-            tvWorstHeader = (TextView) itemView.findViewById(R.id.tvWorstHeader);
+            tvItemHeader = (TextView) itemView.findViewById(R.id.tvItemHeader_itemStats);
+            tvAverageHeader = (TextView) itemView.findViewById(R.id.tvAverageHeader_itemStats);
+            tvBestHeader = (TextView) itemView.findViewById(R.id.tvBestHeader_itemStats);
+            tvWorstHeader = (TextView) itemView.findViewById(R.id.tvWorstHeader_itemStats);
         }
     }
 }

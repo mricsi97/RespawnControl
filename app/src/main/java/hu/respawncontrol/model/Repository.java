@@ -21,6 +21,7 @@ import hu.respawncontrol.model.room.entity.Difficulty;
 import hu.respawncontrol.model.room.entity.GameMode;
 import hu.respawncontrol.model.room.entity.Item;
 import hu.respawncontrol.model.room.entity.ItemType;
+import hu.respawncontrol.model.room.entity.ItemTypeGroup;
 import hu.respawncontrol.model.room.entity.Leaderboard;
 import hu.respawncontrol.model.room.entity.Result;
 import hu.respawncontrol.model.room.entity.Score;
@@ -70,28 +71,6 @@ public class Repository {
         return items;
     }
 
-//    public LiveData<List<Item>> getItemsHavingResultsPastWeek(Long currentDate) {
-//        AsyncTask<Long, Void, LiveData<List<Item>>> task = new GetItemsHavingResultsPastWeekAsyncTask(itemDao).execute(currentDate);
-//        LiveData<List<Item>> items = null;
-//        try {
-//            items = task.get();
-//        } catch (ExecutionException | InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        return items;
-//    }
-//
-//    public LiveData<List<Item>> getItemsHavingResultsPastSeason(Long currentDate) {
-//        AsyncTask<Long, Void, LiveData<List<Item>>> task = new GetItemsHavingResultsPastSeasonAsyncTask(itemDao).execute(currentDate);
-//        LiveData<List<Item>> items = null;
-//        try {
-//            items = task.get();
-//        } catch (ExecutionException | InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        return items;
-//    }
-
     public List<Item> getItemsByItemTypeId(int id) {
         AsyncTask<Integer, Void, List<Item>> task = new GetItemsByItemTypeIdAsyncTask(itemDao).execute(id);
         List<Item> items = null;
@@ -129,6 +108,17 @@ public class Repository {
         return itemTypeGroupsWithItemTypes;
     }
 
+    public LiveData<List<ItemTypeGroup>> getAllItemTypeGroups() {
+        AsyncTask<Void, Void, LiveData<List<ItemTypeGroup>>> task = new GetAllItemTypeGroupsAsyncTask(itemTypeGroupDao).execute();
+        LiveData<List<ItemTypeGroup>> itemTypeGroups = null;
+        try {
+            itemTypeGroups = task.get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return itemTypeGroups;
+    }
+
     public GameMode getGameModeByName(String name) {
         AsyncTask<String, Void, GameMode> task = new GetGameModeByNameAsyncTask(gameModeDao).execute(name);
         GameMode gameMode = null;
@@ -140,6 +130,17 @@ public class Repository {
         return gameMode;
     }
 
+    public LiveData<List<GameMode>> getAllGameModes() {
+        AsyncTask<Void, Void, LiveData<List<GameMode>>> task = new GetAllGameModesAsyncTask(gameModeDao).execute();
+        LiveData<List<GameMode>> gameModes = null;
+        try {
+            gameModes = task.get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return gameModes;
+    }
+
     public LiveData<List<Difficulty>> getDifficultiesByGameModeId(int id) {
         AsyncTask<Integer, Void, LiveData<List<Difficulty>>> task = new GetDifficultiesByGameModeIdAsyncTask(difficultyDao).execute(id);
         LiveData<List<Difficulty>> difficulties = null;
@@ -149,6 +150,17 @@ public class Repository {
             e.printStackTrace();
         }
         return difficulties;
+    }
+
+    public LiveData<Leaderboard> getLeaderboardLiveData(int gameModeId, int itemTypeGroupId, int difficultyId) {
+        AsyncTask<Integer, Void, LiveData<Leaderboard>> task = new GetLeaderboardLiveDataAsyncTask(leaderboardDao).execute(gameModeId, itemTypeGroupId, difficultyId);
+        LiveData<Leaderboard> leaderboard = null;
+        try {
+            leaderboard = task.get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return leaderboard;
     }
 
     public Leaderboard getLeaderboard(int gameModeId, int itemTypeGroupId, int difficultyId) {
@@ -232,41 +244,19 @@ public class Repository {
         return worstTimes;
     }
 
-//    public LiveData<List<Long>> getAverageTimesPastSeason(Long currentDate) {
-//        AsyncTask<Long, Void, LiveData<List<Long>>> task = new GetAverageTimesPastSeasonAsyncTask(resultDao).execute(currentDate);
-//        LiveData<List<Long>> averageTimes = null;
-//        try {
-//            averageTimes = task.get();
-//        } catch (ExecutionException | InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        return averageTimes;
-//    }
-//
-//    public LiveData<List<Long>> getBestTimesPastSeason(Long currentDate) {
-//        AsyncTask<Long, Void, LiveData<List<Long>>> task = new GetBestTimesPastSeasonAsyncTask(resultDao).execute(currentDate);
-//        LiveData<List<Long>> bestTimes = null;
-//        try {
-//            bestTimes = task.get();
-//        } catch (ExecutionException | InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        return bestTimes;
-//    }
-//
-//    public LiveData<List<Long>> getWorstTimesPastSeason(Long currentDate) {
-//        AsyncTask<Long, Void, LiveData<List<Long>>> task = new GetWorstTimesPastSeasonAsyncTask(resultDao).execute(currentDate);
-//        LiveData<List<Long>> worstTimes = null;
-//        try {
-//            worstTimes = task.get();
-//        } catch (ExecutionException | InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        return worstTimes;
-//    }
-
     public void insertScore(Score score) {
         new InsertScoreAsyncTask(scoreDao).execute(score);
+    }
+
+    public LiveData<List<Score>> getScoresByLeaderboard(int leaderboardId) {
+        AsyncTask<Integer, Void, LiveData<List<Score>>> task = new GetScoresByLeaderboardAsyncTask(scoreDao).execute(leaderboardId);
+        LiveData<List<Score>> scores = null;
+        try {
+            scores = task.get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return scores;
     }
 
     //////////////////////
@@ -285,32 +275,6 @@ public class Repository {
             return itemDao.getAllItemsHavingResults();
         }
     }
-
-//    protected static class GetItemsHavingResultsPastWeekAsyncTask extends AsyncTask<Long, Void, LiveData<List<Item>>> {
-//        private ItemDao itemDao;
-//
-//        public GetItemsHavingResultsPastWeekAsyncTask(ItemDao itemDao) {
-//            this.itemDao = itemDao;
-//        }
-//
-//        @Override
-//        protected LiveData<List<Item>> doInBackground(Long... longs) {
-//            return itemDao.getItemsHavingResultsPastWeek(longs[0]);
-//        }
-//    }
-
-//    protected static class GetItemsHavingResultsPastSeasonAsyncTask extends AsyncTask<Long, Void, LiveData<List<Item>>> {
-//        private ItemDao itemDao;
-//
-//        public GetItemsHavingResultsPastSeasonAsyncTask(ItemDao itemDao) {
-//            this.itemDao = itemDao;
-//        }
-//
-//        @Override
-//        protected LiveData<List<Item>> doInBackground(Long... longs) {
-//            return itemDao.getItemsHavingResultsPastSeason(longs[0]);
-//        }
-//    }
 
     protected static class GetItemsHavingResultsInTimePeriodAsyncTask extends AsyncTask<Long, Void, LiveData<List<Item>>> {
         private ItemDao itemDao;
@@ -380,6 +344,19 @@ public class Repository {
         }
     }
 
+    private static class GetAllItemTypeGroupsAsyncTask extends AsyncTask<Void, Void, LiveData<List<ItemTypeGroup>>> {
+        private ItemTypeGroupDao itemTypeGroupDao;
+
+        private GetAllItemTypeGroupsAsyncTask(ItemTypeGroupDao itemTypeGroupDao) {
+            this.itemTypeGroupDao = itemTypeGroupDao;
+        }
+
+        @Override
+        protected LiveData<List<ItemTypeGroup>> doInBackground(Void... voids) {
+            return itemTypeGroupDao.getAllItemTypeGroups();
+        }
+    }
+
     protected static class GetGameModeByNameAsyncTask extends AsyncTask<String, Void, GameMode> {
         private GameModeDao gameModeDao;
 
@@ -390,6 +367,19 @@ public class Repository {
         @Override
         protected GameMode doInBackground(String... strings) {
             return gameModeDao.getGameModeByName(strings[0]);
+        }
+    }
+
+    protected static class GetAllGameModesAsyncTask extends AsyncTask<Void, Void, LiveData<List<GameMode>>> {
+        private GameModeDao gameModeDao;
+
+        public GetAllGameModesAsyncTask(GameModeDao gameModeDao) {
+            this.gameModeDao = gameModeDao;
+        }
+
+        @Override
+        protected LiveData<List<GameMode>> doInBackground(Void... voids) {
+            return gameModeDao.getAllGameModes();
         }
     }
 
@@ -416,6 +406,19 @@ public class Repository {
         @Override
         protected Leaderboard doInBackground(Integer... integers) {
             return leaderboardDao.getLeaderboard(integers[0], integers[1], integers[2]);
+        }
+    }
+
+    protected static class GetLeaderboardLiveDataAsyncTask extends AsyncTask<Integer, Void, LiveData<Leaderboard>> {
+        private LeaderboardDao leaderboardDao;
+
+        public GetLeaderboardLiveDataAsyncTask(LeaderboardDao leaderboardDao) {
+            this.leaderboardDao = leaderboardDao;
+        }
+
+        @Override
+        protected LiveData<Leaderboard> doInBackground(Integer... integers) {
+            return leaderboardDao.getLeaderboardLiveData(integers[0], integers[1], integers[2]);
         }
     }
 
@@ -517,7 +520,6 @@ public class Repository {
         }
     }
 
-
     protected static class InsertScoreAsyncTask extends AsyncTask<Score, Void, Void> {
         private ScoreDao scoreDao;
 
@@ -529,6 +531,19 @@ public class Repository {
         protected Void doInBackground(Score... scores) {
             scoreDao.insert(scores[0]);
             return null;
+        }
+    }
+
+    protected static class GetScoresByLeaderboardAsyncTask extends AsyncTask<Integer, Void, LiveData<List<Score>>> {
+        private ScoreDao scoreDao;
+
+        private GetScoresByLeaderboardAsyncTask(ScoreDao scoreDao) {
+            this.scoreDao = scoreDao;
+        }
+
+        @Override
+        protected LiveData<List<Score>> doInBackground(Integer... integers) {
+            return scoreDao.getScoresByLeaderboard(integers[0]);
         }
     }
 }

@@ -33,7 +33,8 @@ public class TimeTrialResultDialog extends DialogFragment {
 
     private static final String TAG = "TimeTrialResultDialog";
 
-    private SimpleDateFormat timeFormatter = new SimpleDateFormat("ss.SS", Locale.ROOT);
+    private SimpleDateFormat timeFormatter = new SimpleDateFormat("s.SS", Locale.ROOT);
+    private SimpleDateFormat timeFormatterWithMinute = new SimpleDateFormat("m:ss.SS", Locale.ROOT);
 
     @Nullable
     @Override
@@ -64,7 +65,7 @@ public class TimeTrialResultDialog extends DialogFragment {
                 new Observer<Long>() {
                     @Override
                     public void onChanged(Long solveTimeSum) {
-                        tvScore.setText("Score: " + timeFormatter.format(solveTimeSum) + " s");
+                        tvScore.setText("Score: " + timeFormatterWithMinute.format(solveTimeSum));
                     }
                 });
 
@@ -98,6 +99,14 @@ public class TimeTrialResultDialog extends DialogFragment {
             public void onClick(View v) {
                 ((TimeTrialActivity) getActivity()).restartTimeTrial(false);
                 dismiss();
+            }
+        });
+
+        final ImageButton btnHome = (ImageButton) view.findViewById(R.id.btnHome_result);
+        btnHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().finish();
             }
         });
 

@@ -15,14 +15,14 @@ public class Item {
     @PrimaryKey(autoGenerate = true)
     private int itemId;
     private String name;
-    private Integer imageResourceId;
+    private String imageResourceName;
     @TypeConverters(Converters.class)
     private List<Integer> soundResourceIds;
     private Integer respawnTimeInSeconds;
 
-    public Item(String name, Integer imageResourceId, List<Integer> soundResourceIds, Integer respawnTimeInSeconds) {
+    public Item(String name, String imageResourceName, List<Integer> soundResourceIds, Integer respawnTimeInSeconds) {
         this.name = name;
-        this.imageResourceId = imageResourceId;
+        this.imageResourceName = imageResourceName;
         this.soundResourceIds = soundResourceIds;
         this.respawnTimeInSeconds = respawnTimeInSeconds;
     }
@@ -39,8 +39,8 @@ public class Item {
         return name;
     }
 
-    public Integer getImageResourceId() {
-        return imageResourceId;
+    public String getImageResourceName() {
+        return imageResourceName;
     }
 
     public List<Integer> getSoundResourceIds() {

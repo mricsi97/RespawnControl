@@ -1,8 +1,11 @@
 package hu.respawncontrol.model.room.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
+
+import java.util.List;
 
 import hu.respawncontrol.model.room.entity.GameMode;
 
@@ -14,4 +17,7 @@ public interface GameModeDao {
 
     @Query("SELECT * FROM GameMode WHERE name = :name")
     GameMode getGameModeByName(String name);
+
+    @Query("SELECT * FROM GameMode")
+    LiveData<List<GameMode>> getAllGameModes();
 }

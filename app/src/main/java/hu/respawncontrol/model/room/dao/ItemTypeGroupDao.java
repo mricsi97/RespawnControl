@@ -24,4 +24,7 @@ public interface ItemTypeGroupDao {
     @Transaction
     @Query("SELECT * FROM ItemTypeGroup")
     LiveData<List<ItemTypeGroupWithItemTypes>> getAllItemTypeGroupsWithItemTypes();
+
+    @Query("SELECT * FROM ItemTypeGroup")
+    LiveData<List<ItemTypeGroup>> getAllItemTypeGroups();
 }

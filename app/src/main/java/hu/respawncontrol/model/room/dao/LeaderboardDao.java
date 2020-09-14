@@ -1,5 +1,6 @@
 package hu.respawncontrol.model.room.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -14,4 +15,7 @@ public interface LeaderboardDao {
 
     @Query("SELECT * FROM Leaderboard WHERE gameModeId = :gameModeId AND itemTypeGroupId = :itemTypeGroupId AND difficultyId = :difficultyId")
     Leaderboard getLeaderboard(int gameModeId, int itemTypeGroupId, int difficultyId);
+
+    @Query("SELECT * FROM Leaderboard WHERE gameModeId = :gameModeId AND itemTypeGroupId = :itemTypeGroupId AND difficultyId = :difficultyId")
+    LiveData<Leaderboard> getLeaderboardLiveData(int gameModeId, int itemTypeGroupId, int difficultyId);
 }

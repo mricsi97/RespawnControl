@@ -377,7 +377,7 @@ public class TimeTrialActivity extends AppCompatActivity implements TimeTrialOpt
                     setTvRespawnMinute("X");
                 }
             }
-            setItemImage(item.getImageResourceId());
+            setItemImage(getResources().getIdentifier(item.getImageResourceName(), "drawable", getPackageName()));
 
             // Play sounds for the item
             if(itemSoundsEnabled) {
