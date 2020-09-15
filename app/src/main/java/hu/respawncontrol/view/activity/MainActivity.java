@@ -1,19 +1,27 @@
 package hu.respawncontrol.view.activity;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.preference.PreferenceManager;
 
-import android.app.ActivityManager;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
+import android.view.MenuItem;
+
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.navigation.NavigationView;
 
 import hu.respawncontrol.helper.MusicManager;
 import hu.respawncontrol.R;
+import hu.respawncontrol.view.fragment.HomeFragment;
+import hu.respawncontrol.view.fragment.SettingsFragment;
+import hu.respawncontrol.view.fragment.StatsFragment;
 
-public class MainActivity extends AppCompatActivity /*implements OnCompleteListener<GoogleSignInAccount>*/ {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener/*implements OnCompleteListener<GoogleSignInAccount>*/ {
+    private DrawerLayout drawer;
 
     private static final String TAG = "MainActivity";
 //    public static final int RC_SIGN_IN = 1001;
@@ -21,41 +29,32 @@ public class MainActivity extends AppCompatActivity /*implements OnCompleteListe
 
 //    private GoogleSignInClient signInClient;
 
+    private NavigationView navigationView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        drawer = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        if (savedInstanceState == null) {
+            switchToHomeFragment();
+        }
+
 //        GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
 //                .build();
 //        signInClient = GoogleSignIn.getClient(this, signInOptions);
-
-        final Button btnTimeTrial = (Button) findViewById(R.id.btnTimeTrial);
-        btnTimeTrial.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, TimeTrialActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        final ImageButton btnSettings = (ImageButton) findViewById(R.id.btnSettings);
-        btnSettings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        final ImageButton btnStats = (ImageButton) findViewById(R.id.btnStats);
-        btnStats.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, StatsActivity.class);
-                startActivity(intent);
-            }
-        });
 
 //        final SignInButton btnSignIn = (SignInButton) findViewById(R.id.btnSignIn);
 //        btnSignIn.setOnClickListener(new View.OnClickListener() {
@@ -86,11 +85,83 @@ public class MainActivity extends AppCompatActivity /*implements OnCompleteListe
     }
 
     @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.nav_home:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new HomeFragment()).commit();
+                setTitle("Home");
+                break;
+            case R.id.nav_stats:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new StatsFragment()).commit();
+                setTitle("Stats");
+                break;
+//            case R.id.nav_leaderboards:
+//                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+//                        new LeaderboardsFragment()).commit();
+//            setTitle("Leaderboards");
+//                break;
+            case R.id.nav_settings:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new SettingsFragment()).commit();
+                setTitle("Settings");
+                break;
+        }
+
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            // Return to home screen first on back press
+            int itemId = navigationView.getCheckedItem().getItemId();
+            if (itemId != R.id.nav_home) {
+                switchToHomeFragment();
+            } else {
+                super.onBackPressed();
+            }
+        }
+    }
+
+    private void switchToHomeFragment() {
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                new HomeFragment()).commit();
+        navigationView.setCheckedItem(R.id.nav_home);
+        setTitle("Home");
+    }
+
+    public void switchToStatsFragment() {
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                new StatsFragment()).commit();
+        navigationView.setCheckedItem(R.id.nav_stats);
+        setTitle("Stats");
+    }
+
+//    public void switchToLeaderboardsFragment() {
+//        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+//                new LeaderboardsFragment()).commit();
+//        navigationView.setCheckedItem(R.id.nav_leaderboards);
+//        setTitle("Leaderboards");
+//    }
+
+    public void switchToSettingsFragment() {
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                new SettingsFragment()).commit();
+        navigationView.setCheckedItem(R.id.nav_settings);
+        setTitle("Settings");
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
 
         boolean musicEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("music_toggle", false);
-        if(musicEnabled) {
+        if (musicEnabled) {
             MusicManager musicManager = MusicManager.getInstance(this);
             musicManager.onStart();
         }
@@ -113,7 +184,7 @@ public class MainActivity extends AppCompatActivity /*implements OnCompleteListe
         super.onStop();
 
         boolean musicEnabled = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("music_toggle", false);
-        if(musicEnabled) {
+        if (musicEnabled) {
             MusicManager musicManager = MusicManager.getInstance(this);
             musicManager.onStop();
         }

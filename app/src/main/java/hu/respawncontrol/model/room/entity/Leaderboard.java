@@ -15,12 +15,14 @@ public class Leaderboard {
     private int gameModeId;
     private int itemTypeGroupId;
     private int difficultyId;
+    private boolean isCustom;
 
-    public Leaderboard(String name, int gameModeId, int itemTypeGroupId, int difficultyId) {
+    public Leaderboard(String name, int gameModeId, int itemTypeGroupId, int difficultyId, boolean isCustom) {
         this.name = name;
         this.gameModeId = gameModeId;
         this.itemTypeGroupId = itemTypeGroupId;
         this.difficultyId = difficultyId;
+        this.isCustom = isCustom;
     }
 
     public void setId(int id) {
@@ -45,5 +47,9 @@ public class Leaderboard {
 
     public int getDifficultyId() {
         return difficultyId;
+    }
+
+    public boolean isCustom() {
+        return isCustom;
     }
 }

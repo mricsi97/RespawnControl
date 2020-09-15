@@ -17,13 +17,13 @@ public class Item {
     private String name;
     private String imageResourceName;
     @TypeConverters(Converters.class)
-    private List<Integer> soundResourceIds;
+    private List<String> soundResourceEntryNames;
     private Integer respawnTimeInSeconds;
 
-    public Item(String name, String imageResourceName, List<Integer> soundResourceIds, Integer respawnTimeInSeconds) {
+    public Item(String name, String imageResourceName, List<String> soundResourceEntryNames, Integer respawnTimeInSeconds) {
         this.name = name;
         this.imageResourceName = imageResourceName;
-        this.soundResourceIds = soundResourceIds;
+        this.soundResourceEntryNames = soundResourceEntryNames;
         this.respawnTimeInSeconds = respawnTimeInSeconds;
     }
 
@@ -43,11 +43,11 @@ public class Item {
         return imageResourceName;
     }
 
-    public List<Integer> getSoundResourceIds() {
-        if(soundResourceIds == null) {
-            soundResourceIds = new ArrayList<>();
+    public List<String> getSoundResourceEntryNames() {
+        if(soundResourceEntryNames == null) {
+            soundResourceEntryNames = new ArrayList<>();
         }
-        return soundResourceIds;
+        return soundResourceEntryNames;
     }
 
     public Integer getRespawnTimeInSeconds() {

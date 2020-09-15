@@ -8,6 +8,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -133,7 +134,12 @@ public class ScoresFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 boolean isTimeTrial = viewModel.determineIfTimeTrial();
+
+                final TextView tvDifficultyHeader = (TextView) view.findViewById(R.id.tvDifficultyHeader_scores);
+                tvDifficultyHeader.setText(isTimeTrial ? "Test Amount" : "Difficulty");
+
                 scoreAdapter.setGameMode(isTimeTrial);
+
                 viewModel.getLeaderboard().observe(getViewLifecycleOwner(),
                         new Observer<Leaderboard>() {
                             @Override
@@ -152,7 +158,6 @@ public class ScoresFragment extends Fragment {
                         });
             }
         });
-
 
         return view;
     }

@@ -10,24 +10,24 @@ import java.util.List;
 
 public class Converters {
     @TypeConverter
-    public static String fromResourceIdList(List<Integer> soundResourceIds) {
-        if(soundResourceIds == null) {
+    public static String fromResourceIdList(List<String> soundResourceEntryNames) {
+        if(soundResourceEntryNames == null) {
             return null;
         }
         Gson gson = new Gson();
-        Type type = new TypeToken<List<Integer>>() {}.getType();
-        String json = gson.toJson(soundResourceIds, type);
+        Type type = new TypeToken<List<String>>() {}.getType();
+        String json = gson.toJson(soundResourceEntryNames, type);
         return json;
     }
 
     @TypeConverter
-    public static List<Integer> toResourceIdList(String soundResourceIdsString) {
-        if(soundResourceIdsString == null) {
+    public static List<String> toResourceIdList(String soundResourceEntryNameString) {
+        if(soundResourceEntryNameString == null) {
             return null;
         }
         Gson gson = new Gson();
-        Type type = new TypeToken<List<Integer>>() {}.getType();
-        List<Integer> soundResourceIds = gson.fromJson(soundResourceIdsString, type);
-        return soundResourceIds;
+        Type type = new TypeToken<List<String>>() {}.getType();
+        List<String> soundResourceEntryNames = gson.fromJson(soundResourceEntryNameString, type);
+        return soundResourceEntryNames;
     }
 }

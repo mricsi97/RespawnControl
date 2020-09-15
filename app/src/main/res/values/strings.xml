@@ -23,8 +23,8 @@
     <string name="title_activity_leaderboard">LeaderboardActivity</string>
     <string name="title_activity_stats">StatsActivity</string>
     <string name="stats">Stats</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="tab_title_item_stats">Items</string>
     <string name="tab_title_scores">Scores</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>

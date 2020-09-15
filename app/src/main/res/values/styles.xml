@@ -19,10 +19,10 @@
         <item name="buttonTint">@color/checked_button_color</item>
     </style>
 
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
+<!--    <style name="AppTheme.NoActionBar">-->
+<!--        <item name="windowActionBar">false</item>-->
+<!--        <item name="windowNoTitle">true</item>-->
+<!--    </style>-->
 
 <!--    <style name="AppTheme.ActionBarStyle" parent="Widget.AppCompat.Light.ActionBar">-->
 <!--        <item name="background">@color/colorPrimaryDark</item>-->

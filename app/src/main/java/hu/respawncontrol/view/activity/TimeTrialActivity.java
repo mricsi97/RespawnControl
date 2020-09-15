@@ -1,6 +1,7 @@
 package hu.respawncontrol.view.activity;
 
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -121,7 +122,7 @@ public class TimeTrialActivity extends AppCompatActivity implements TimeTrialOpt
         }
 
         if(countdownSoundEnabled) {
-            countdownSoundId = soundPool.load(TimeTrialActivity.this, R.raw.ui_countdown, 1);
+            countdownSoundId = soundPool.load(this, R.raw.ui_countdown, 1);
         }
 
         tvCountdown = (TextView) findViewById(R.id.tvCountdown);
@@ -267,10 +268,11 @@ public class TimeTrialActivity extends AppCompatActivity implements TimeTrialOpt
                     continue;
                 }
 
-                ArrayList<Integer> soundResourceIds = (ArrayList<Integer>) item.getSoundResourceIds();
+                Resources res = getResources();
+                ArrayList<String> soundResourceEntryNames = (ArrayList<String>) item.getSoundResourceEntryNames();
                 ArrayList<Integer> soundIdList = new ArrayList<>();
-                for(Integer resourceId : soundResourceIds) {
-                    Integer soundId = soundPool.load(this, resourceId, 1);
+                for(String resourceEntryName : soundResourceEntryNames) {
+                    Integer soundId = soundPool.load(this, res.getIdentifier(resourceEntryName, "raw", getPackageName()), 1);
                     soundIdList.add(soundId);
                 }
 

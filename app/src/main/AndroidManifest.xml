@@ -9,11 +9,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".view.activity.StatsActivity"
-            android:label="@string/title_activity_stats"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-
         <meta-data
             android:name="com.google.android.gms.games.APP_ID"
             android:value="@string/app_id" />
@@ -21,6 +16,10 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
+        <activity
+            android:name=".view.activity.StatsActivity"
+            android:label="@string/title_activity_stats">
+        </activity>
         <activity android:name=".view.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

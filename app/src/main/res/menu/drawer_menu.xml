@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home_24"
+            android:title="Home / Play" />
+        <item
+            android:id="@+id/nav_stats"
+            android:icon="@drawable/twotone_leaderboard_24"
+            android:title="Stats" />
+        <item
+            android:id="@+id/nav_leaderboards"
+            android:icon="@drawable/twotone_emoji_events_24"
+            android:title="Leaderboards" />
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings_48dp"
+            android:title="Settings" />
+    </group>
+</menu>
