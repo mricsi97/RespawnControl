@@ -262,7 +262,7 @@ public class TimeTrialActivity extends AppCompatActivity implements TimeTrialOpt
     private void loadSoundsForItems(List<Item> items) {
         if(itemSoundsEnabled) {
             for(Item item : items) {
-                String itemName = item.getName();
+                String itemName = item.getItemName();
 
                 if(soundIdLists.containsKey(itemName)){
                     continue;
@@ -307,7 +307,6 @@ public class TimeTrialActivity extends AppCompatActivity implements TimeTrialOpt
 
             showKeyboard();
 
-//            solveTimes = new Long[itemsToTest.size()];
             startTime = SystemClock.elapsedRealtime();
             for(int i = 0; i < itemsToTest.size(); i++) {
                 isSecondInputLongerThanTwo = false;
@@ -383,7 +382,7 @@ public class TimeTrialActivity extends AppCompatActivity implements TimeTrialOpt
 
             // Play sounds for the item
             if(itemSoundsEnabled) {
-                ArrayList<Integer> soundIds = soundIdLists.get(item.getName());
+                ArrayList<Integer> soundIds = soundIdLists.get(item.getItemName());
                 if(soundIds != null) {
                     int numberOfSoundsToPlay = voiceLinesEnabled ? 2 : 1;
                     for(int i = 0; i < numberOfSoundsToPlay && i < soundIds.size(); i++) {

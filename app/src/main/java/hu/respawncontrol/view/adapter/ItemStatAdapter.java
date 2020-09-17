@@ -35,7 +35,7 @@ public class ItemStatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_stat_item, parent, false);
+                .inflate(R.layout.itemstat_item, parent, false);
         return new ItemStatViewHolder(view);
     }
 

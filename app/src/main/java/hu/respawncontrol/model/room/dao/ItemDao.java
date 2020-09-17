@@ -27,9 +27,4 @@ public interface ItemDao {
             "GROUP BY Item.itemId " +
             "ORDER BY Item.itemId")
     LiveData<List<Item>> getItemsHavingResultsInTimePeriod(Long fromTime, Long toTime);
-
-    @Query("SELECT * FROM Item INNER JOIN ItemCrossItemType " +
-            "ON Item.itemId = ItemCrossItemType.itemId " +
-            "WHERE ItemCrossItemType.itemTypeId = :itemTypeId")
-    List<Item> getItemsByItemTypeId(int itemTypeId);
 }

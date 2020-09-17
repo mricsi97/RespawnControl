@@ -14,14 +14,16 @@ public class Item {
 
     @PrimaryKey(autoGenerate = true)
     private int itemId;
-    private String name;
+    private String itemName;
+    private String shortName;
     private String imageResourceName;
     @TypeConverters(Converters.class)
     private List<String> soundResourceEntryNames;
     private Integer respawnTimeInSeconds;
 
-    public Item(String name, String imageResourceName, List<String> soundResourceEntryNames, Integer respawnTimeInSeconds) {
-        this.name = name;
+    public Item(String itemName, String shortName, String imageResourceName, List<String> soundResourceEntryNames, Integer respawnTimeInSeconds) {
+        this.itemName = itemName;
+        this.shortName = shortName;
         this.imageResourceName = imageResourceName;
         this.soundResourceEntryNames = soundResourceEntryNames;
         this.respawnTimeInSeconds = respawnTimeInSeconds;
@@ -35,8 +37,12 @@ public class Item {
         return itemId;
     }
 
-    public String getName() {
-        return name;
+    public String getItemName() {
+        return itemName;
+    }
+
+    public String getShortName() {
+        return shortName;
     }
 
     public String getImageResourceName() {

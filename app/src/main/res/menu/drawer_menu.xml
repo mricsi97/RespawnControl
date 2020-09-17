@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
     <group android:checkableBehavior="single">
@@ -16,6 +15,10 @@
             android:id="@+id/nav_leaderboards"
             android:icon="@drawable/twotone_emoji_events_24"
             android:title="Leaderboards" />
+        <item
+            android:id="@+id/nav_itemgroups"
+            android:icon="@drawable/diabotical"
+            android:title="Item Groups" />
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_settings_48dp"

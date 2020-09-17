@@ -16,11 +16,11 @@ import hu.respawncontrol.model.Repository;
 import hu.respawncontrol.model.room.entity.Difficulty;
 import hu.respawncontrol.model.room.entity.GameMode;
 import hu.respawncontrol.model.room.entity.Item;
-import hu.respawncontrol.model.room.entity.ItemType;
+import hu.respawncontrol.model.room.entity.ItemGroup;
 import hu.respawncontrol.model.room.entity.Leaderboard;
 import hu.respawncontrol.model.room.entity.Result;
 import hu.respawncontrol.model.room.entity.Score;
-import hu.respawncontrol.model.room.helper.ItemTypeGroupWithItemTypes;
+import hu.respawncontrol.model.room.helper.ItemGroupWithItems;
 
 public class TimeTrialViewModel extends AndroidViewModel {
     public static final String TAG = "TimeTrialViewModel";
@@ -33,10 +33,10 @@ public class TimeTrialViewModel extends AndroidViewModel {
     private Leaderboard leaderboard;
     private GameMode gameMode;
 
-    private LiveData<List<ItemTypeGroupWithItemTypes>> allItemTypeGroupsWithItemTypes;
+    private LiveData<List<ItemGroupWithItems>> allItemGroupsWithItems;
     private LiveData<List<Difficulty>> difficulties;
 
-    private ItemTypeGroupWithItemTypes selectedItemTypeGroupWithItemTypes;
+    private ItemGroupWithItems selectedItemGroupWithItems;
     private Difficulty selectedDifficulty;
     private Integer selectedTestAmount;
 
@@ -70,21 +70,36 @@ public class TimeTrialViewModel extends AndroidViewModel {
     }
 
     public void prepareTests() {
-        List<ItemType> itemTypes = selectedItemTypeGroupWithItemTypes.itemTypes;
+        ItemGroup itemGroup = selectedItemGroupWithItems.itemGroup;
+        List<Item> itemsInItemGroup = selectedItemGroupWithItems.items;
+        List<Integer> frequencies = repository.getFrequenciesByItemGroup(itemGroup.getItemGroupId());
 
-        ArrayList<Item> testItems = new ArrayList<>();
-        ArrayList<Long> pickupMoments = new ArrayList<>();
-        ArrayList<Long> respawnMoments = new ArrayList<>();
+        // Random item picking setup
+        int frequencySum = 0; // 85
+        List<Integer> ranges = new ArrayList<>();
+        for(int i = 0; i < itemsInItemGroup.size(); i++) {
+            frequencySum += frequencies.get(i);
+            ranges.add(frequencySum);
+        }
+
+        List<Long> pickupMoments = new ArrayList<>();
+        List<Long> respawnMoments = new ArrayList<>();
+        List<Item> testItems = new ArrayList<>();
         for(int i = 0; i < selectedTestAmount; i++) {
-            // Select random item type and item
-            ItemType randomItemType = itemTypes.get(random.nextInt(itemTypes.size()));
+            int rand = random.nextInt(frequencySum);
 
-            ArrayList<Item> items = (ArrayList<Item>) repository.getItemsByItemTypeId(randomItemType.getItemTypeId());
-            Item randomItem = items.get(random.nextInt(items.size()));
-            testItems.add(randomItem);
+            Item testItem = null;
+            for(int j = 0; j < ranges.size(); j++) {
+                if(rand < ranges.get(j)) {
+                    testItem = itemsInItemGroup.get(j);
+                    break;
+                }
+            }
+
+            testItems.add(testItem);
 
             // Create random time for pickup in milliseconds
-            long respawnTime = randomItem.getRespawnTimeInSeconds() * 1000;
+            long respawnTime = testItem.getRespawnTimeInSeconds() * 1000;
             long randomPickupMoment = random.nextInt(780) * 1000;
             pickupMoments.add(randomPickupMoment);
 
@@ -101,9 +116,9 @@ public class TimeTrialViewModel extends AndroidViewModel {
     }
 
     private void setLeaderboard() {
-        int itemTypeGroupId = selectedItemTypeGroupWithItemTypes.itemTypeGroup.getItemTypeGroupId();
+        int itemGroupId = selectedItemGroupWithItems.itemGroup.getItemGroupId();
         int difficultyId = selectedDifficulty.getId();
-        this.leaderboard = repository.getLeaderboard(gameMode.getId(), itemTypeGroupId, difficultyId);
+        this.leaderboard = repository.getLeaderboard(gameMode.getId(), itemGroupId, difficultyId);
     }
 
     public void calculateSolveTimeDifferences() {
@@ -130,11 +145,11 @@ public class TimeTrialViewModel extends AndroidViewModel {
         repository.insertScore(new Score(solveTimeSum.getValue(), testItems.getValue().size(), leaderboard.getId(), date));
     }
 
-    public LiveData<List<ItemTypeGroupWithItemTypes>> getAllItemTypeGroupsWithItemTypes() {
-        if(allItemTypeGroupsWithItemTypes == null) {
-            allItemTypeGroupsWithItemTypes = repository.getAllItemTypeGroupsWithItemTypes();
+    public LiveData<List<ItemGroupWithItems>> getAllItemGroupsWithItems() {
+        if(allItemGroupsWithItems == null) {
+            allItemGroupsWithItems = repository.getAllItemGroupsWithItems();
         }
-        return allItemTypeGroupsWithItemTypes;
+        return allItemGroupsWithItems;
     }
 
     public LiveData<List<Difficulty>> getDifficulties() {
@@ -157,9 +172,9 @@ public class TimeTrialViewModel extends AndroidViewModel {
         repository.insertResults(resultValues);
     }
 
-    public void setSelectedItemTypeGroupWithItemTypes(int position) {
-        if(allItemTypeGroupsWithItemTypes != null) {
-            selectedItemTypeGroupWithItemTypes = allItemTypeGroupsWithItemTypes.getValue().get(position);
+    public void setSelectedItemGroupWithItems(int position) {
+        if(allItemGroupsWithItems != null) {
+            selectedItemGroupWithItems = allItemGroupsWithItems.getValue().get(position);
         }
     }
 

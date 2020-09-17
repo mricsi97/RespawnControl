@@ -12,26 +12,23 @@ import java.util.Arrays;
 
 import hu.respawncontrol.R;
 import hu.respawncontrol.model.room.dao.DifficultyDao;
+import hu.respawncontrol.model.room.dao.FrequencyDao;
 import hu.respawncontrol.model.room.dao.GameModeDao;
 import hu.respawncontrol.model.room.dao.ItemDao;
-import hu.respawncontrol.model.room.dao.ItemTypeDao;
-import hu.respawncontrol.model.room.dao.ItemTypeGroupDao;
+import hu.respawncontrol.model.room.dao.ItemGroupDao;
 import hu.respawncontrol.model.room.dao.LeaderboardDao;
 import hu.respawncontrol.model.room.dao.ResultDao;
 import hu.respawncontrol.model.room.dao.ScoreDao;
 import hu.respawncontrol.model.room.entity.Difficulty;
+import hu.respawncontrol.model.room.entity.Frequency;
 import hu.respawncontrol.model.room.entity.GameMode;
 import hu.respawncontrol.model.room.entity.Item;
-import hu.respawncontrol.model.room.entity.ItemCrossItemType;
-import hu.respawncontrol.model.room.entity.ItemType;
-import hu.respawncontrol.model.room.entity.ItemTypeCrossItemTypeGroup;
-import hu.respawncontrol.model.room.entity.ItemTypeGroup;
+import hu.respawncontrol.model.room.entity.ItemGroup;
 import hu.respawncontrol.model.room.entity.Leaderboard;
 import hu.respawncontrol.model.room.entity.Result;
 import hu.respawncontrol.model.room.entity.Score;
 
-@androidx.room.Database(entities = {GameMode.class, Difficulty.class, Item.class, ItemType.class, ItemCrossItemType.class,
-        ItemTypeGroup.class, ItemTypeCrossItemTypeGroup.class, Leaderboard.class, Result.class, Score.class}, version = 5)
+@androidx.room.Database(entities = {GameMode.class, Difficulty.class, Item.class, ItemGroup.class, Frequency.class, Leaderboard.class, Result.class, Score.class}, version = 6)
 @TypeConverters({Converters.class})
 public abstract class LocalDatabase extends RoomDatabase {
 
@@ -41,8 +38,8 @@ public abstract class LocalDatabase extends RoomDatabase {
     public abstract GameModeDao gameModeDao();
     public abstract DifficultyDao difficultyDao();
     public abstract ItemDao itemDao();
-    public abstract ItemTypeDao itemTypeDao();
-    public abstract ItemTypeGroupDao itemTypeGroupDao();
+    public abstract ItemGroupDao itemGroupDao();
+    public abstract FrequencyDao frequencyDao();
     public abstract LeaderboardDao leaderboardDao();
     public abstract ResultDao resultDao();
     public abstract ScoreDao scoreDao();
@@ -68,8 +65,8 @@ public abstract class LocalDatabase extends RoomDatabase {
         private GameModeDao gameModeDao;
         private DifficultyDao difficultyDao;
         private ItemDao itemDao;
-        private ItemTypeDao itemTypeDao;
-        private ItemTypeGroupDao itemTypeGroupDao;
+        private ItemGroupDao itemGroupDao;
+        private FrequencyDao frequencyDao;
         private LeaderboardDao leaderboardDao;
         private Context context;
 
@@ -77,8 +74,8 @@ public abstract class LocalDatabase extends RoomDatabase {
             gameModeDao = db.gameModeDao();
             difficultyDao = db.difficultyDao();
             itemDao = db.itemDao();
-            itemTypeDao = db.itemTypeDao();
-            itemTypeGroupDao = db.itemTypeGroupDao();
+            itemGroupDao = db.itemGroupDao();
+            frequencyDao = db.frequencyDao();
             leaderboardDao = db.leaderboardDao();
             this.context = context;
         }
@@ -93,113 +90,108 @@ public abstract class LocalDatabase extends RoomDatabase {
             int timeTrial50Id = (int) difficultyDao.insert(new Difficulty("50", timeTrialId));
             int timeTrial100Id = (int) difficultyDao.insert(new Difficulty("100", timeTrialId));
             int timeTrialCustomId = (int) difficultyDao.insert(new Difficulty("Custom", timeTrialId));
+            int endless3_5Id = (int) difficultyDao.insert(new Difficulty("3.5s (Easy)", endlessId));
+            int endless2_5Id = (int) difficultyDao.insert(new Difficulty("2.5s (Normal)", endlessId));
+            int endless1_5Id = (int) difficultyDao.insert(new Difficulty("1.5s (Pro)", endlessId));
+            int endlessCustom = (int) difficultyDao.insert(new Difficulty("Custom", endlessId));
 
             Resources res = context.getResources();
 
             // Items
-            int redItemId = (int) itemDao.insert(new Item("Red Armor", res.getResourceEntryName(R.drawable.armor_100), Arrays.asList(res.getResourceEntryName(R.raw.armort4)), 25));
-            int yellowItemId = (int) itemDao.insert(new Item("Yellow Armor", res.getResourceEntryName(R.drawable.armor_75), Arrays.asList(res.getResourceEntryName(R.raw.armort3)), 25));
-            int blueItemId = (int) itemDao.insert(new Item("Blue Armor", res.getResourceEntryName(R.drawable.armor_50), Arrays.asList(res.getResourceEntryName(R.raw.armort2)), 25));
-            int shardItemId = (int) itemDao.insert(new Item("Armor Shard", res.getResourceEntryName(R.drawable.armor_5), Arrays.asList(res.getResourceEntryName(R.raw.armort1)), 25));
+            int redItemId = (int) itemDao.insert(new Item("Red Armor", "A100", res.getResourceEntryName(R.drawable.armor_100), Arrays.asList(res.getResourceEntryName(R.raw.armort4)), 25));
+            int yellowItemId = (int) itemDao.insert(new Item("Yellow Armor", "A75", res.getResourceEntryName(R.drawable.armor_75), Arrays.asList(res.getResourceEntryName(R.raw.armort3)), 25));
+            int blueItemId = (int) itemDao.insert(new Item("Blue Armor", "A50", res.getResourceEntryName(R.drawable.armor_50), Arrays.asList(res.getResourceEntryName(R.raw.armort2)), 25));
+            int shardItemId = (int) itemDao.insert(new Item("Armor Shard", "A5", res.getResourceEntryName(R.drawable.armor_5), Arrays.asList(res.getResourceEntryName(R.raw.armort1)), 25));
 
-            int megaItemId = (int) itemDao.insert(new Item("Mega Health", res.getResourceEntryName(R.drawable.health_100), Arrays.asList(res.getResourceEntryName(R.raw.hpt3)), 35));
-            int health5ItemId = (int) itemDao.insert(new Item("Bubble Health", res.getResourceEntryName(R.drawable.health_5), Arrays.asList(res.getResourceEntryName(R.raw.hpt0)), 20));
-            int health25ItemId = (int) itemDao.insert(new Item("25 Health", res.getResourceEntryName(R.drawable.health_25), Arrays.asList(res.getResourceEntryName(R.raw.hpt1)), 20));
-            int health50ItemId = (int) itemDao.insert(new Item("50 Health", res.getResourceEntryName(R.drawable.health_50), Arrays.asList(res.getResourceEntryName(R.raw.hpt2)), 20));
+            int megaItemId = (int) itemDao.insert(new Item("Mega Health", "H100", res.getResourceEntryName(R.drawable.health_100), Arrays.asList(res.getResourceEntryName(R.raw.hpt3)), 35));
+            int health50ItemId = (int) itemDao.insert(new Item("50 Health", "H50", res.getResourceEntryName(R.drawable.health_50), Arrays.asList(res.getResourceEntryName(R.raw.hpt2)), 20));
+            int health25ItemId = (int) itemDao.insert(new Item("25 Health", "H25", res.getResourceEntryName(R.drawable.health_25), Arrays.asList(res.getResourceEntryName(R.raw.hpt1)), 20));
+            int health5ItemId = (int) itemDao.insert(new Item("Bubble Health", "H5", res.getResourceEntryName(R.drawable.health_5), Arrays.asList(res.getResourceEntryName(R.raw.hpt0)), 20));
 
-            int machineGunItemId = (int) itemDao.insert(new Item("Machine Gun", res.getResourceEntryName(R.drawable.machine_gun), Arrays.asList(res.getResourceEntryName(R.raw.weaponmac)), 15));
-            int blasterItemId = (int) itemDao.insert(new Item("Blaster", res.getResourceEntryName(R.drawable.blaster), Arrays.asList(res.getResourceEntryName(R.raw.weaponbl)), 15));
-            int shotgunItemId = (int) itemDao.insert(new Item("Super Shotgun", res.getResourceEntryName(R.drawable.shotgun), Arrays.asList(res.getResourceEntryName(R.raw.weaponss)), 15));
-            int rocketLauncherItemId = (int) itemDao.insert(new Item("Rocket Launcher", res.getResourceEntryName(R.drawable.rocket_launcher), Arrays.asList(res.getResourceEntryName(R.raw.weaponrl)), 15));
-            int shaftItemId = (int) itemDao.insert(new Item("Shaft", res.getResourceEntryName(R.drawable.shaft), Arrays.asList(res.getResourceEntryName(R.raw.weaponshaft)), 15));
-            int crossbowItemId = (int) itemDao.insert(new Item("Crossbow", res.getResourceEntryName(R.drawable.crossbow), Arrays.asList(res.getResourceEntryName(R.raw.weaponcb)), 15));
-            int pincerItemId = (int) itemDao.insert(new Item("Pincer", res.getResourceEntryName(R.drawable.pincer), Arrays.asList(res.getResourceEntryName(R.raw.weaponpncr)), 15));
-            int grenadeLauncherItemId = (int) itemDao.insert(new Item("Grenade Launcher", res.getResourceEntryName(R.drawable.grenade_launcher), Arrays.asList(res.getResourceEntryName(R.raw.weapongl)), 15));
+            int machineGunItemId = (int) itemDao.insert(new Item("Machine Gun", "MG", res.getResourceEntryName(R.drawable.machine_gun), Arrays.asList(res.getResourceEntryName(R.raw.weaponmac)), 15));
+            int blasterItemId = (int) itemDao.insert(new Item("Blaster", "BLA", res.getResourceEntryName(R.drawable.blaster), Arrays.asList(res.getResourceEntryName(R.raw.weaponbl)), 15));
+            int shotgunItemId = (int) itemDao.insert(new Item("Super Shotgun", "SS", res.getResourceEntryName(R.drawable.shotgun), Arrays.asList(res.getResourceEntryName(R.raw.weaponss)), 15));
+            int rocketLauncherItemId = (int) itemDao.insert(new Item("Rocket Launcher", "RL", res.getResourceEntryName(R.drawable.rocket_launcher), Arrays.asList(res.getResourceEntryName(R.raw.weaponrl)), 15));
+            int shaftItemId = (int) itemDao.insert(new Item("Shaft", "SHA", res.getResourceEntryName(R.drawable.shaft), Arrays.asList(res.getResourceEntryName(R.raw.weaponshaft)), 15));
+            int crossbowItemId = (int) itemDao.insert(new Item("Crossbow", "XB", res.getResourceEntryName(R.drawable.crossbow), Arrays.asList(res.getResourceEntryName(R.raw.weaponcb)), 15));
+            int pincerItemId = (int) itemDao.insert(new Item("Pincer", "PNCR", res.getResourceEntryName(R.drawable.pincer), Arrays.asList(res.getResourceEntryName(R.raw.weaponpncr)), 15));
+            int grenadeLauncherItemId = (int) itemDao.insert(new Item("Grenade Launcher", "GL", res.getResourceEntryName(R.drawable.grenade_launcher), Arrays.asList(res.getResourceEntryName(R.raw.weapongl)), 15));
 
-            int siphonatorItemId = (int) itemDao.insert(new Item("Siphonator", res.getResourceEntryName(R.drawable.siphonator), Arrays.asList(res.getResourceEntryName(R.raw.powerup_siphonator), res.getResourceEntryName(R.raw.announcer_common_powerup_siphonator_pickup)), 120));
-            int vanguardItemId = (int) itemDao.insert(new Item("Vanguard", res.getResourceEntryName(R.drawable.vanguard), Arrays.asList(res.getResourceEntryName(R.raw.powerup_vanguard), res.getResourceEntryName(R.raw.announcer_common_powerup_vg_pickup)), 120));
-            int vindicatorItemId = (int) itemDao.insert(new Item("Vindicator", res.getResourceEntryName(R.drawable.vindicator), Arrays.asList(res.getResourceEntryName(R.raw.powerup), res.getResourceEntryName(R.raw.announcer_common_powerup_td_pickup)), 120));
-            int diaboticalItemId = (int) itemDao.insert(new Item("Diabotical", res.getResourceEntryName(R.drawable.diabotical), Arrays.asList(res.getResourceEntryName(R.raw.powerup), res.getResourceEntryName(R.raw.announcer_common_powerup_db_pickup)), 240));
+            int siphonatorItemId = (int) itemDao.insert(new Item("Siphonator", "SIP", res.getResourceEntryName(R.drawable.siphonator), Arrays.asList(res.getResourceEntryName(R.raw.powerup_siphonator), res.getResourceEntryName(R.raw.announcer_common_powerup_siphonator_pickup)), 120));
+            int vanguardItemId = (int) itemDao.insert(new Item("Vanguard", "VAN", res.getResourceEntryName(R.drawable.vanguard), Arrays.asList(res.getResourceEntryName(R.raw.powerup_vanguard), res.getResourceEntryName(R.raw.announcer_common_powerup_vg_pickup)), 120));
+            int vindicatorItemId = (int) itemDao.insert(new Item("Vindicator", "VIN", res.getResourceEntryName(R.drawable.vindicator), Arrays.asList(res.getResourceEntryName(R.raw.powerup), res.getResourceEntryName(R.raw.announcer_common_powerup_td_pickup)), 120));
+            int diaboticalItemId = (int) itemDao.insert(new Item("Diabotical", "DIA", res.getResourceEntryName(R.drawable.diabotical), Arrays.asList(res.getResourceEntryName(R.raw.powerup), res.getResourceEntryName(R.raw.announcer_common_powerup_db_pickup)), 240));
 
-            // Item types
-            int redArmorTypeId = (int) itemTypeDao.insert(new ItemType("Red Armor", "A100"));
-            int yellowArmorTypeId = (int) itemTypeDao.insert(new ItemType("Yellow Armor", "A75"));
-            int blueArmorTypeId = (int) itemTypeDao.insert(new ItemType("Blue Armor", "A50"));
-            int shardArmorTypeId = (int) itemTypeDao.insert(new ItemType("Shard Armor", "A5"));
-            int megaHealthTypeId = (int) itemTypeDao.insert(new ItemType("Mega Health", "H100"));
-            int health50TypeId = (int) itemTypeDao.insert(new ItemType("50 Health", "H50"));
-            int health25TypeId = (int) itemTypeDao.insert(new ItemType("25 Health", "H25"));
-            int health5TypeId = (int) itemTypeDao.insert(new ItemType("5 Health", "H5"));
-            int otherHealthTypeId = (int) itemTypeDao.insert(new ItemType("Other Health", "H5/25/50"));
-            int weaponTypeId = (int) itemTypeDao.insert(new ItemType("Weapon", "Weapons"));
-            int powerupTypeId = (int) itemTypeDao.insert(new ItemType("Powerup", "Powerups"));
-            int siphonatorTypeId = (int) itemTypeDao.insert(new ItemType("Siphonator", "Sip"));
-            int vanguardTypeId = (int) itemTypeDao.insert(new ItemType("Vanguard", "Van"));
-            int vindicatorTypeId = (int) itemTypeDao.insert(new ItemType("Vindicator", "Vin"));
-            int diaboticalTypeId = (int) itemTypeDao.insert(new ItemType("Diabotical", "Dia"));
+            // Item groups
+            int duelId = (int) itemGroupDao.insert(new ItemGroup("Duel", false));
+            int extinctionId = (int) itemGroupDao.insert(new ItemGroup("Extinction", false));
+            int macGuffinId = (int) itemGroupDao.insert(new ItemGroup("MacGuffin", false));
+            int varietyId = (int) itemGroupDao.insert(new ItemGroup("Variety", false));
 
-            itemTypeDao.insert(new ItemCrossItemType(redItemId, redArmorTypeId));
-            itemTypeDao.insert(new ItemCrossItemType(yellowItemId, yellowArmorTypeId));
-            itemTypeDao.insert(new ItemCrossItemType(blueItemId, blueArmorTypeId));
-            itemTypeDao.insert(new ItemCrossItemType(shardItemId, shardArmorTypeId));
-            itemTypeDao.insert(new ItemCrossItemType(megaItemId, megaHealthTypeId));
-            itemTypeDao.insert(new ItemCrossItemType(health5ItemId, health5TypeId));
-            itemTypeDao.insert(new ItemCrossItemType(health5ItemId, otherHealthTypeId));
-            itemTypeDao.insert(new ItemCrossItemType(health25ItemId, health25TypeId));
-            itemTypeDao.insert(new ItemCrossItemType(health25ItemId, otherHealthTypeId));
-            itemTypeDao.insert(new ItemCrossItemType(health50ItemId, health50TypeId));
-            itemTypeDao.insert(new ItemCrossItemType(health50ItemId, otherHealthTypeId));
-            itemTypeDao.insert(new ItemCrossItemType(machineGunItemId, weaponTypeId));
-            itemTypeDao.insert(new ItemCrossItemType(blasterItemId, weaponTypeId));
-            itemTypeDao.insert(new ItemCrossItemType(shotgunItemId, weaponTypeId));
-            itemTypeDao.insert(new ItemCrossItemType(rocketLauncherItemId, weaponTypeId));
-            itemTypeDao.insert(new ItemCrossItemType(shaftItemId, weaponTypeId));
-            itemTypeDao.insert(new ItemCrossItemType(crossbowItemId, weaponTypeId));
-            itemTypeDao.insert(new ItemCrossItemType(pincerItemId, weaponTypeId));
-            itemTypeDao.insert(new ItemCrossItemType(grenadeLauncherItemId, weaponTypeId));
-            itemTypeDao.insert(new ItemCrossItemType(siphonatorItemId, siphonatorTypeId));
-            itemTypeDao.insert(new ItemCrossItemType(siphonatorItemId, powerupTypeId));
-            itemTypeDao.insert(new ItemCrossItemType(vanguardItemId, vanguardTypeId));
-            itemTypeDao.insert(new ItemCrossItemType(vanguardItemId, powerupTypeId));
-            itemTypeDao.insert(new ItemCrossItemType(vindicatorItemId, vindicatorTypeId));
-            itemTypeDao.insert(new ItemCrossItemType(vindicatorItemId, powerupTypeId));
-            itemTypeDao.insert(new ItemCrossItemType(diaboticalItemId, diaboticalTypeId));
-            itemTypeDao.insert(new ItemCrossItemType(diaboticalItemId, powerupTypeId));
+            // Frequencies (item <-> item group)
+            frequencyDao.insert(new Frequency(redItemId, duelId, 29)); // 26.85%
+            frequencyDao.insert(new Frequency(yellowItemId, duelId, 29)); // 26.85%
+            frequencyDao.insert(new Frequency(blueItemId, duelId, 29)); // 26.85%
+            frequencyDao.insert(new Frequency(megaItemId, duelId, 21)); // 19.5%
 
-            // Item type groups
-            int duelItemTypeGroupId = (int) itemTypeGroupDao.insert(new ItemTypeGroup("Duel"));
-            int extinctionItemTypeGroupId = (int) itemTypeGroupDao.insert(new ItemTypeGroup("Extinction"));
-            int macGuffinItemTypeGroupId = (int) itemTypeGroupDao.insert(new ItemTypeGroup("MacGuffin"));
+            frequencyDao.insert(new Frequency(redItemId, extinctionId, 29)); // 34.1%
+            frequencyDao.insert(new Frequency(blueItemId, extinctionId, 29)); // 34.1%
+            frequencyDao.insert(new Frequency(megaItemId, extinctionId, 21)); // 24.7%
+            frequencyDao.insert(new Frequency(siphonatorItemId, extinctionId, 2)); // 2.35%
+            frequencyDao.insert(new Frequency(vanguardItemId, extinctionId, 2)); // 2.35%
+            frequencyDao.insert(new Frequency(vindicatorItemId, extinctionId, 2)); // 2.35%
 
-            itemTypeGroupDao.insert(new ItemTypeCrossItemTypeGroup(redArmorTypeId, duelItemTypeGroupId));
-            itemTypeGroupDao.insert(new ItemTypeCrossItemTypeGroup(yellowArmorTypeId, duelItemTypeGroupId));
-            itemTypeGroupDao.insert(new ItemTypeCrossItemTypeGroup(blueArmorTypeId, duelItemTypeGroupId));
-            itemTypeGroupDao.insert(new ItemTypeCrossItemTypeGroup(megaHealthTypeId, duelItemTypeGroupId));
+            frequencyDao.insert(new Frequency(redItemId, macGuffinId, 29)); // 34.1%
+            frequencyDao.insert(new Frequency(blueItemId, macGuffinId, 29)); // 34.1%
+            frequencyDao.insert(new Frequency(megaItemId, macGuffinId, 21)); // 24.7%
+            frequencyDao.insert(new Frequency(vindicatorItemId, macGuffinId, 6)); // 7%
 
-            itemTypeGroupDao.insert(new ItemTypeCrossItemTypeGroup(redArmorTypeId, extinctionItemTypeGroupId));
-//            itemTypeGroupDao.insert(new ItemTypeCrossItemTypeGroup(yellowArmorTypeId, extinctionItemTypeGroupId));
-            itemTypeGroupDao.insert(new ItemTypeCrossItemTypeGroup(blueArmorTypeId, extinctionItemTypeGroupId));
-            itemTypeGroupDao.insert(new ItemTypeCrossItemTypeGroup(megaHealthTypeId, extinctionItemTypeGroupId));
-            itemTypeGroupDao.insert(new ItemTypeCrossItemTypeGroup(siphonatorTypeId, extinctionItemTypeGroupId));
-            itemTypeGroupDao.insert(new ItemTypeCrossItemTypeGroup(vanguardTypeId, extinctionItemTypeGroupId));
-            itemTypeGroupDao.insert(new ItemTypeCrossItemTypeGroup(vindicatorTypeId, extinctionItemTypeGroupId));
+            frequencyDao.insert(new Frequency(redItemId, varietyId, 10)); // 11.9%
+            frequencyDao.insert(new Frequency(yellowItemId, varietyId, 10)); // 11.9%
+            frequencyDao.insert(new Frequency(blueItemId, varietyId, 10)); // 11.9%
+            frequencyDao.insert(new Frequency(shardItemId, varietyId, 10)); // 11.9%
+            frequencyDao.insert(new Frequency(megaItemId, varietyId, 10)); // 11.9%
+            frequencyDao.insert(new Frequency(health50ItemId, varietyId, 10)); // 11.9%
+            frequencyDao.insert(new Frequency(health25ItemId, varietyId, 10)); // 11.9%
+            frequencyDao.insert(new Frequency(health5ItemId, varietyId, 10)); // 11.9%
+            frequencyDao.insert(new Frequency(siphonatorItemId, varietyId, 1)); // 1.2%
+            frequencyDao.insert(new Frequency(vanguardItemId, varietyId, 1)); // 1.2%
+            frequencyDao.insert(new Frequency(vindicatorItemId, varietyId, 1)); // 1.2%
+            frequencyDao.insert(new Frequency(diaboticalItemId, varietyId, 1)); // 1.2%
 
-            itemTypeGroupDao.insert(new ItemTypeCrossItemTypeGroup(redArmorTypeId, macGuffinItemTypeGroupId));
-//            itemTypeGroupDao.insert(new ItemTypeCrossItemTypeGroup(yellowArmorTypeId, macGuffinItemTypeGroupId));
-            itemTypeGroupDao.insert(new ItemTypeCrossItemTypeGroup(blueArmorTypeId, macGuffinItemTypeGroupId));
-            itemTypeGroupDao.insert(new ItemTypeCrossItemTypeGroup(megaHealthTypeId, macGuffinItemTypeGroupId));
-            itemTypeGroupDao.insert(new ItemTypeCrossItemTypeGroup(vindicatorTypeId, macGuffinItemTypeGroupId));
+            // Google Play leaderboards
+            leaderboardDao.insert(new Leaderboard("Time Trial | Duel | 50", timeTrialId, duelId, timeTrial50Id, false));
+            leaderboardDao.insert(new Leaderboard("Time Trial | Duel | 100", timeTrialId, duelId, timeTrial100Id, false));
+            leaderboardDao.insert(new Leaderboard("Time Trial | Extinction | 50", timeTrialId, extinctionId, timeTrial50Id, false));
+            leaderboardDao.insert(new Leaderboard("Time Trial | Extinction | 100", timeTrialId, extinctionId, timeTrial100Id, false));
+            leaderboardDao.insert(new Leaderboard("Time Trial | MacGuffin | 50", timeTrialId, macGuffinId, timeTrial50Id, false));
+            leaderboardDao.insert(new Leaderboard("Time Trial | MacGuffin | 100", timeTrialId, macGuffinId, timeTrial100Id, false));
+            leaderboardDao.insert(new Leaderboard("Time Trial | Variety | 50", timeTrialId, varietyId, timeTrial50Id, false));
+            leaderboardDao.insert(new Leaderboard("Time Trial | Variety | 100", timeTrialId, varietyId, timeTrial100Id, false));
 
-            // Leaderboards
-            leaderboardDao.insert(new Leaderboard("Time Trial | Duel | 50", timeTrialId, duelItemTypeGroupId, timeTrial50Id, false));
-            leaderboardDao.insert(new Leaderboard("Time Trial | Duel | 100", timeTrialId, duelItemTypeGroupId, timeTrial100Id, false));
-            leaderboardDao.insert(new Leaderboard("Time Trial | Duel | Custom", timeTrialId, duelItemTypeGroupId, timeTrialCustomId, true));
-            leaderboardDao.insert(new Leaderboard("Time Trial | Extinction | 50", timeTrialId, extinctionItemTypeGroupId, timeTrial50Id, false));
-            leaderboardDao.insert(new Leaderboard("Time Trial | Extinction | 100", timeTrialId, extinctionItemTypeGroupId, timeTrial100Id, false));
-            leaderboardDao.insert(new Leaderboard("Time Trial | Extinction | Custom", timeTrialId, extinctionItemTypeGroupId, timeTrialCustomId, true));
-            leaderboardDao.insert(new Leaderboard("Time Trial | MacGuffin | 50", timeTrialId, macGuffinItemTypeGroupId, timeTrial50Id, false));
-            leaderboardDao.insert(new Leaderboard("Time Trial | MacGuffin | 100", timeTrialId, macGuffinItemTypeGroupId, timeTrial100Id, false));
-            leaderboardDao.insert(new Leaderboard("Time Trial | MacGuffin | Custom", timeTrialId, macGuffinItemTypeGroupId, timeTrialCustomId, true));
+            leaderboardDao.insert(new Leaderboard("Endless | Duel | 3.5", endlessId, duelId, endless3_5Id, false));
+            leaderboardDao.insert(new Leaderboard("Endless | Duel | 2.5", endlessId, duelId, endless2_5Id, false));
+            leaderboardDao.insert(new Leaderboard("Endless | Duel | 1.5", endlessId, duelId, endless1_5Id, false));
+            leaderboardDao.insert(new Leaderboard("Endless | Extinction | 3.5", endlessId, extinctionId, endless3_5Id, false));
+            leaderboardDao.insert(new Leaderboard("Endless | Extinction | 2.5", endlessId, extinctionId, endless2_5Id, false));
+            leaderboardDao.insert(new Leaderboard("Endless | Extinction | 1.5", endlessId, extinctionId, endless1_5Id, false));
+            leaderboardDao.insert(new Leaderboard("Endless | MacGuffin | 3.5", endlessId, macGuffinId, endless3_5Id, false));
+            leaderboardDao.insert(new Leaderboard("Endless | MacGuffin | 2.5", endlessId, macGuffinId, endless2_5Id, false));
+            leaderboardDao.insert(new Leaderboard("Endless | MacGuffin | 1.5", endlessId, macGuffinId, endless1_5Id, false));
+            leaderboardDao.insert(new Leaderboard("Endless | Variety | 3.5", endlessId, varietyId, endless3_5Id, false));
+            leaderboardDao.insert(new Leaderboard("Endless | Variety | 2.5", endlessId, varietyId, endless2_5Id, false));
+            leaderboardDao.insert(new Leaderboard("Endless | Variety | 1.5", endlessId, varietyId, endless1_5Id, false));
+
+            // Custom leaderboards
+            leaderboardDao.insert(new Leaderboard("Time Trial | Duel | Custom", timeTrialId, duelId, timeTrialCustomId, true));
+            leaderboardDao.insert(new Leaderboard("Time Trial | Extinction | Custom", timeTrialId, extinctionId, timeTrialCustomId, true));
+            leaderboardDao.insert(new Leaderboard("Time Trial | MacGuffin | Custom", timeTrialId, macGuffinId, timeTrialCustomId, true));
+            leaderboardDao.insert(new Leaderboard("Time Trial | Variety | Custom", timeTrialId, varietyId, timeTrialCustomId, true));
+
+            leaderboardDao.insert(new Leaderboard("Endless | Duel | Custom", endlessId, duelId,  endlessCustom, true));
+            leaderboardDao.insert(new Leaderboard("Endless | Extinction | Custom", endlessId, extinctionId, endlessCustom, true));
+            leaderboardDao.insert(new Leaderboard("Endless | MacGuffin | Custom", endlessId, macGuffinId, endlessCustom, true));
+            leaderboardDao.insert(new Leaderboard("Endless | Variety | Custom", endlessId, varietyId, endlessCustom, true));
 
             return null;
         }

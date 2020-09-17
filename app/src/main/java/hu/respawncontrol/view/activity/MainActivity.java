@@ -11,11 +11,11 @@ import androidx.preference.PreferenceManager;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.navigation.NavigationView;
 
 import hu.respawncontrol.helper.MusicManager;
 import hu.respawncontrol.R;
+import hu.respawncontrol.view.fragment.ItemGroupsFragment;
 import hu.respawncontrol.view.fragment.HomeFragment;
 import hu.respawncontrol.view.fragment.SettingsFragment;
 import hu.respawncontrol.view.fragment.StatsFragment;
@@ -102,6 +102,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //                        new LeaderboardsFragment()).commit();
 //            setTitle("Leaderboards");
 //                break;
+            case R.id.nav_itemgroups:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new ItemGroupsFragment()).commit();
+                setTitle("Item Groups");
+                break;
             case R.id.nav_settings:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new SettingsFragment()).commit();

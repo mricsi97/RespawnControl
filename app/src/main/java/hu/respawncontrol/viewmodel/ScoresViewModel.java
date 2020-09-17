@@ -3,22 +3,15 @@ package hu.respawncontrol.viewmodel;
 import android.app.Application;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.Observer;
 
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
-import hu.respawncontrol.helper.HelperMethods;
 import hu.respawncontrol.model.Repository;
 import hu.respawncontrol.model.room.entity.Difficulty;
 import hu.respawncontrol.model.room.entity.GameMode;
-import hu.respawncontrol.model.room.entity.Item;
-import hu.respawncontrol.model.room.entity.ItemTypeGroup;
+import hu.respawncontrol.model.room.entity.ItemGroup;
 import hu.respawncontrol.model.room.entity.Leaderboard;
 import hu.respawncontrol.model.room.entity.Score;
 
@@ -26,11 +19,11 @@ public class ScoresViewModel extends AndroidViewModel {
     private Repository repository;
 
     private LiveData<List<GameMode>> gameModes;
-    private LiveData<List<ItemTypeGroup>> itemTypeGroups;
+    private LiveData<List<ItemGroup>> itemGroups;
     private LiveData<List<Difficulty>> difficulties;
 
     private GameMode selectedGameMode;
-    private ItemTypeGroup selectedItemTypeGroup;
+    private ItemGroup selectedItemGroup;
     private Difficulty selectedDifficulty;
 
     public ScoresViewModel(@NonNull Application application) {
@@ -43,8 +36,8 @@ public class ScoresViewModel extends AndroidViewModel {
         selectedGameMode = gameModes.getValue().get(position);
     }
 
-    public void setSelectedItemTypeGroup(int position) {
-        selectedItemTypeGroup = itemTypeGroups.getValue().get(position);
+    public void setSelectedItemGroup(int position) {
+        selectedItemGroup = itemGroups.getValue().get(position);
     }
 
     public void setSelectedDifficulty(int position) {
@@ -58,11 +51,11 @@ public class ScoresViewModel extends AndroidViewModel {
         return gameModes;
     }
 
-    public LiveData<List<ItemTypeGroup>> getAllItemTypeGroups() {
-        if(itemTypeGroups == null) {
-            itemTypeGroups = repository.getAllItemTypeGroups();
+    public LiveData<List<ItemGroup>> getAllItemGroups() {
+        if(itemGroups == null) {
+            itemGroups = repository.getAllItemGroups();
         }
-        return itemTypeGroups;
+        return itemGroups;
     }
 
     public LiveData<List<Difficulty>> getDifficulties() {
@@ -79,6 +72,6 @@ public class ScoresViewModel extends AndroidViewModel {
     }
 
     public LiveData<Leaderboard> getLeaderboard() {
-        return repository.getLeaderboardLiveData(selectedGameMode.getId(), selectedItemTypeGroup.getItemTypeGroupId(), selectedDifficulty.getId());
+        return repository.getLeaderboardLiveData(selectedGameMode.getId(), selectedItemGroup.getItemGroupId(), selectedDifficulty.getId());
     }
 }

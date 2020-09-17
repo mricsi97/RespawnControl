@@ -10,7 +10,7 @@
     android:padding="15dp">
 
     <TextView
-        android:id="@+id/tvItemType"
+        android:id="@+id/tvItemGroupQuestion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/what_types_of_items"
@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/round_button_empty">
         <Spinner
-            android:id="@+id/spinner_itemTypeGroup"
+            android:id="@+id/spinner_itemGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@android:color/white"

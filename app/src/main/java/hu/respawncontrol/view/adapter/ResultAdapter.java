@@ -53,7 +53,7 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ResultView
                 "drawable", context.getPackageName()), null);
         holder.ivItem.setImageDrawable(image);
 
-        holder.tvItemName.setText(item.getName());
+        holder.tvItemName.setText(item.getItemName());
     }
 
     public void setResults(ArrayList<Result> results) {

@@ -31,11 +31,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import hu.respawncontrol.R;
+import hu.respawncontrol.model.room.entity.Item;
+import hu.respawncontrol.model.room.entity.ItemGroup;
+import hu.respawncontrol.model.room.helper.ItemGroupWithItems;
 import hu.respawncontrol.viewmodel.TimeTrialViewModel;
 import hu.respawncontrol.model.room.entity.Difficulty;
-import hu.respawncontrol.model.room.entity.ItemType;
-import hu.respawncontrol.model.room.entity.ItemTypeGroup;
-import hu.respawncontrol.model.room.helper.ItemTypeGroupWithItemTypes;
 
 
 public class TimeTrialOptionsDialog extends DialogFragment {
@@ -67,8 +67,8 @@ public class TimeTrialOptionsDialog extends DialogFragment {
             getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         }
 
-        spinner = (Spinner) view.findViewById(R.id.spinner_itemTypeGroup);
-        final TextView tvItemType = view.findViewById(R.id.tvItemType);
+        spinner = (Spinner) view.findViewById(R.id.spinner_itemGroup);
+        final TextView tvItemGroupQuestion = view.findViewById(R.id.tvItemGroupQuestion);
         final TextView tvTestAmount = view.findViewById(R.id.tvTestAmount);
         rgTestAmount = view.findViewById(R.id.rgTestAmount);
 
@@ -76,12 +76,14 @@ public class TimeTrialOptionsDialog extends DialogFragment {
                 ViewModelProvider.AndroidViewModelFactory.getInstance(this.getActivity().getApplication()))
                 .get(TimeTrialViewModel.class);
 
-        viewModel.getAllItemTypeGroupsWithItemTypes().observe(this, new Observer<List<ItemTypeGroupWithItemTypes>>() {
-            @Override
-            public void onChanged(List<ItemTypeGroupWithItemTypes> itemTypeGroupWithItemTypes) {
-                inflateSpinner(itemTypeGroupWithItemTypes);
-            }
-        });
+        viewModel.getAllItemGroupsWithItems().observe(this,
+                new Observer<List<ItemGroupWithItems>>() {
+                    @Override
+                    public void onChanged(List<ItemGroupWithItems> itemGroupWithItems) {
+                        inflateSpinner(itemGroupWithItems);
+                    }
+                });
+
 
         viewModel.getDifficulties().observe(this, new Observer<List<Difficulty>>() {
             @Override
@@ -98,11 +100,11 @@ public class TimeTrialOptionsDialog extends DialogFragment {
                 // Make sure a spinner item is selected
                 int selectedSpinnerItemPosition = spinner.getSelectedItemPosition();
                 if (selectedSpinnerItemPosition == AdapterView.INVALID_POSITION) {
-                    Snackbar.make(view, "Please select an item type group.", Snackbar.LENGTH_LONG).show();
-                    tvItemType.setError("");
+                    Snackbar.make(view, "Please select an item group.", Snackbar.LENGTH_LONG).show();
+                    tvItemGroupQuestion.setError("");
                     return;
                 }
-                tvItemType.setError(null);
+                tvItemGroupQuestion.setError(null);
 
                 // Make sure a radio button is checked
                 int checkedRadioButtonId = rgTestAmount.getCheckedRadioButtonId();
@@ -138,7 +140,7 @@ public class TimeTrialOptionsDialog extends DialogFragment {
                 }
 
                 viewModel.setSelectedDifficulty(selectedDifficulty);
-                viewModel.setSelectedItemTypeGroupWithItemTypes(selectedSpinnerItemPosition);
+                viewModel.setSelectedItemGroupWithItems(selectedSpinnerItemPosition);
                 viewModel.setSelectedTestAmount(testAmount);
 
                 dialogFinishedListener.dialogFinished();
@@ -149,21 +151,21 @@ public class TimeTrialOptionsDialog extends DialogFragment {
         return view;
     }
 
-    private void inflateSpinner(List<ItemTypeGroupWithItemTypes> itemTypeGroupsWithItemTypes) {
+    private void inflateSpinner(List<ItemGroupWithItems> itemGroupsWithItems) {
         ArrayList<String> entryStrings = new ArrayList<>();
 
-        for (ItemTypeGroupWithItemTypes itemTypeGroupWithItemTypes : itemTypeGroupsWithItemTypes) {
-            ItemTypeGroup itemTypeGroup = itemTypeGroupWithItemTypes.itemTypeGroup;
-            List<ItemType> itemTypes = itemTypeGroupWithItemTypes.itemTypes;
+        for (ItemGroupWithItems itemGroupWithItems : itemGroupsWithItems) {
+            ItemGroup itemGroup = itemGroupWithItems.itemGroup;
+            List<Item> items = itemGroupWithItems.items;
 
-            StringBuilder itemTypeString = new StringBuilder();
-            for (int i = 0; i < itemTypes.size() - 1; i++) {
-                itemTypeString.append(itemTypes.get(i).getShortName());
-                itemTypeString.append(", ");
+            StringBuilder itemString = new StringBuilder();
+            for (int i = 0; i < items.size() - 1; i++) {
+                itemString.append(items.get(i).getShortName());
+                itemString.append(", ");
             }
-            itemTypeString.append(itemTypes.get(itemTypes.size() - 1).getShortName());
+            itemString.append(items.get(items.size() - 1).getShortName());
 
-            entryStrings.add(itemTypeGroup.getName() + " (" + itemTypeString + ")");
+            entryStrings.add(itemGroup.getItemGroupName() + " (" + itemString + ")");
         }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getActivity(),

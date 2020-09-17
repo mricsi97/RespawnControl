@@ -10,27 +10,26 @@ import java.util.concurrent.ExecutionException;
 
 import hu.respawncontrol.model.room.LocalDatabase;
 import hu.respawncontrol.model.room.dao.DifficultyDao;
+import hu.respawncontrol.model.room.dao.FrequencyDao;
 import hu.respawncontrol.model.room.dao.GameModeDao;
 import hu.respawncontrol.model.room.dao.ItemDao;
-import hu.respawncontrol.model.room.dao.ItemTypeDao;
-import hu.respawncontrol.model.room.dao.ItemTypeGroupDao;
+import hu.respawncontrol.model.room.dao.ItemGroupDao;
 import hu.respawncontrol.model.room.dao.LeaderboardDao;
 import hu.respawncontrol.model.room.dao.ResultDao;
 import hu.respawncontrol.model.room.dao.ScoreDao;
 import hu.respawncontrol.model.room.entity.Difficulty;
 import hu.respawncontrol.model.room.entity.GameMode;
 import hu.respawncontrol.model.room.entity.Item;
-import hu.respawncontrol.model.room.entity.ItemType;
-import hu.respawncontrol.model.room.entity.ItemTypeGroup;
+import hu.respawncontrol.model.room.entity.ItemGroup;
 import hu.respawncontrol.model.room.entity.Leaderboard;
 import hu.respawncontrol.model.room.entity.Result;
 import hu.respawncontrol.model.room.entity.Score;
-import hu.respawncontrol.model.room.helper.ItemTypeGroupWithItemTypes;
+import hu.respawncontrol.model.room.helper.ItemGroupWithItems;
 
 public class Repository {
     private ItemDao itemDao;
-    private ItemTypeDao itemTypeDao;
-    private ItemTypeGroupDao itemTypeGroupDao;
+    private ItemGroupDao itemGroupDao;
+    private FrequencyDao frequencyDao;
     private GameModeDao gameModeDao;
     private DifficultyDao difficultyDao;
     private LeaderboardDao leaderboardDao;
@@ -40,8 +39,8 @@ public class Repository {
     public Repository(Application application) {
         LocalDatabase database = LocalDatabase.getInstance(application);
         itemDao = database.itemDao();
-        itemTypeDao = database.itemTypeDao();
-        itemTypeGroupDao = database.itemTypeGroupDao();
+        itemGroupDao = database.itemGroupDao();
+        frequencyDao = database.frequencyDao();
         gameModeDao = database.gameModeDao();
         difficultyDao = database.difficultyDao();
         leaderboardDao = database.leaderboardDao();
@@ -71,52 +70,37 @@ public class Repository {
         return items;
     }
 
-    public List<Item> getItemsByItemTypeId(int id) {
-        AsyncTask<Integer, Void, List<Item>> task = new GetItemsByItemTypeIdAsyncTask(itemDao).execute(id);
-        List<Item> items = null;
+    public List<Integer> getFrequenciesByItemGroup(int itemGroupId) {
+        AsyncTask<Integer, Void, List<Integer>> task = new GetFrequenciesByItemGroupAndItemsAsyncTask(frequencyDao).execute(itemGroupId);
+        List<Integer> frequencies = null;
         try {
-            items = task.get();
+            frequencies = task.get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
-        return items;
+        return frequencies;
     }
 
-    public void insertItemType(ItemType itemType) {
-        new InsertItemTypeAsyncTask(itemTypeDao).execute(itemType);
-    }
-
-    public List<ItemType> getAllItemTypes() {
-        AsyncTask<Void, Void, List<ItemType>> task = new GetAllItemTypesAsyncTask(itemTypeDao).execute();
-        List<ItemType> itemTypes = null;
+    public LiveData<List<ItemGroup>> getAllItemGroups() {
+        AsyncTask<Void, Void, LiveData<List<ItemGroup>>> task = new GetAllItemGroupsAsyncTask(itemGroupDao).execute();
+        LiveData<List<ItemGroup>> itemGroups = null;
         try {
-            itemTypes = task.get();
+            itemGroups = task.get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
-        return itemTypes;
+        return itemGroups;
     }
 
-    public LiveData<List<ItemTypeGroupWithItemTypes>> getAllItemTypeGroupsWithItemTypes() {
-        AsyncTask<Void, Void, LiveData<List<ItemTypeGroupWithItemTypes>>> task = new GetAllItemTypeGroupsWithItemTypesAsyncTask(itemTypeGroupDao).execute();
-        LiveData<List<ItemTypeGroupWithItemTypes>> itemTypeGroupsWithItemTypes = null;
+    public LiveData<List<ItemGroupWithItems>> getAllItemGroupsWithItems() {
+        AsyncTask<Void, Void, LiveData<List<ItemGroupWithItems>>> task = new GetAllItemGroupsWithItemsAsyncTask(itemGroupDao).execute();
+        LiveData<List<ItemGroupWithItems>> itemGroups = null;
         try {
-            itemTypeGroupsWithItemTypes = task.get();
+            itemGroups = task.get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
-        return itemTypeGroupsWithItemTypes;
-    }
-
-    public LiveData<List<ItemTypeGroup>> getAllItemTypeGroups() {
-        AsyncTask<Void, Void, LiveData<List<ItemTypeGroup>>> task = new GetAllItemTypeGroupsAsyncTask(itemTypeGroupDao).execute();
-        LiveData<List<ItemTypeGroup>> itemTypeGroups = null;
-        try {
-            itemTypeGroups = task.get();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        return itemTypeGroups;
+        return itemGroups;
     }
 
     public GameMode getGameModeByName(String name) {
@@ -152,8 +136,8 @@ public class Repository {
         return difficulties;
     }
 
-    public LiveData<Leaderboard> getLeaderboardLiveData(int gameModeId, int itemTypeGroupId, int difficultyId) {
-        AsyncTask<Integer, Void, LiveData<Leaderboard>> task = new GetLeaderboardLiveDataAsyncTask(leaderboardDao).execute(gameModeId, itemTypeGroupId, difficultyId);
+    public LiveData<Leaderboard> getLeaderboardLiveData(int gameModeId, int itemGroupId, int difficultyId) {
+        AsyncTask<Integer, Void, LiveData<Leaderboard>> task = new GetLeaderboardLiveDataAsyncTask(leaderboardDao).execute(gameModeId, itemGroupId, difficultyId);
         LiveData<Leaderboard> leaderboard = null;
         try {
             leaderboard = task.get();
@@ -163,8 +147,8 @@ public class Repository {
         return leaderboard;
     }
 
-    public Leaderboard getLeaderboard(int gameModeId, int itemTypeGroupId, int difficultyId) {
-        AsyncTask<Integer, Void, Leaderboard> task = new GetLeaderboardAsyncTask(leaderboardDao).execute(gameModeId, itemTypeGroupId, difficultyId);
+    public Leaderboard getLeaderboard(int gameModeId, int itemGroupId, int difficultyId) {
+        AsyncTask<Integer, Void, Leaderboard> task = new GetLeaderboardAsyncTask(leaderboardDao).execute(gameModeId, itemGroupId, difficultyId);
         Leaderboard leaderboard = null;
         try {
             leaderboard = task.get();
@@ -291,69 +275,42 @@ public class Repository {
         }
     }
 
-    private static class GetItemsByItemTypeIdAsyncTask extends AsyncTask<Integer, Void, List<Item>> {
-        private ItemDao itemDao;
+    protected static class GetFrequenciesByItemGroupAndItemsAsyncTask extends AsyncTask<Integer, Void, List<Integer>> {
+        private FrequencyDao frequencyDao;
 
-        private GetItemsByItemTypeIdAsyncTask(ItemDao itemDao) {
-            this.itemDao = itemDao;
+        public GetFrequenciesByItemGroupAndItemsAsyncTask(FrequencyDao frequencyDao) {
+            this.frequencyDao = frequencyDao;
         }
 
         @Override
-        protected List<Item> doInBackground(Integer... ids) {
-            return itemDao.getItemsByItemTypeId(ids[0]);
+        protected List<Integer> doInBackground(Integer... integers) {
+            return frequencyDao.getFrequenciesByItemGroupId(integers[0]);
         }
     }
 
-    private static class InsertItemTypeAsyncTask extends AsyncTask<ItemType, Void, Void> {
-        private ItemTypeDao itemTypeDao;
+    protected static class GetAllItemGroupsWithItemsAsyncTask extends AsyncTask<Void, Void, LiveData<List<ItemGroupWithItems>>> {
+        private ItemGroupDao itemGroupDao;
 
-        private InsertItemTypeAsyncTask(ItemTypeDao itemTypeDao) {
-            this.itemTypeDao = itemTypeDao;
+        private GetAllItemGroupsWithItemsAsyncTask(ItemGroupDao itemGroupDao) {
+            this.itemGroupDao = itemGroupDao;
         }
 
         @Override
-        protected Void doInBackground(ItemType... itemTypes) {
-            itemTypeDao.insert(itemTypes[0]);
-            return null;
+        protected LiveData<List<ItemGroupWithItems>> doInBackground(Void... voids) {
+            return itemGroupDao.getAllItemGroupsWithItems();
         }
     }
 
-    private static class GetAllItemTypesAsyncTask extends AsyncTask<Void, Void, List<ItemType>> {
-        private ItemTypeDao itemTypeDao;
+    protected static class GetAllItemGroupsAsyncTask extends AsyncTask<Void, Void, LiveData<List<ItemGroup>>> {
+        private ItemGroupDao itemGroupDao;
 
-        private GetAllItemTypesAsyncTask(ItemTypeDao itemTypeDao) {
-            this.itemTypeDao = itemTypeDao;
+        private GetAllItemGroupsAsyncTask(ItemGroupDao itemGroupDao) {
+            this.itemGroupDao = itemGroupDao;
         }
 
         @Override
-        protected List<ItemType> doInBackground(Void... voids) {
-            return itemTypeDao.getAllItemTypes();
-        }
-    }
-
-    private static class GetAllItemTypeGroupsWithItemTypesAsyncTask extends AsyncTask<Void, Void, LiveData<List<ItemTypeGroupWithItemTypes>>> {
-        private ItemTypeGroupDao itemTypeGroupDao;
-
-        private GetAllItemTypeGroupsWithItemTypesAsyncTask(ItemTypeGroupDao itemTypeGroupDao) {
-            this.itemTypeGroupDao = itemTypeGroupDao;
-        }
-
-        @Override
-        protected LiveData<List<ItemTypeGroupWithItemTypes>> doInBackground(Void... voids) {
-            return itemTypeGroupDao.getAllItemTypeGroupsWithItemTypes();
-        }
-    }
-
-    private static class GetAllItemTypeGroupsAsyncTask extends AsyncTask<Void, Void, LiveData<List<ItemTypeGroup>>> {
-        private ItemTypeGroupDao itemTypeGroupDao;
-
-        private GetAllItemTypeGroupsAsyncTask(ItemTypeGroupDao itemTypeGroupDao) {
-            this.itemTypeGroupDao = itemTypeGroupDao;
-        }
-
-        @Override
-        protected LiveData<List<ItemTypeGroup>> doInBackground(Void... voids) {
-            return itemTypeGroupDao.getAllItemTypeGroups();
+        protected LiveData<List<ItemGroup>> doInBackground(Void... voids) {
+            return itemGroupDao.getAllItemGroups();
         }
     }
 

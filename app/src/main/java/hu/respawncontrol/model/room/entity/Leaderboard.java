@@ -5,7 +5,7 @@ import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
 @Entity(foreignKeys = { @ForeignKey(entity = GameMode.class, parentColumns = "id", childColumns = "gameModeId"),
-                        @ForeignKey(entity = ItemTypeGroup.class, parentColumns = "itemTypeGroupId", childColumns = "itemTypeGroupId"),
+                        @ForeignKey(entity = ItemGroup.class, parentColumns = "itemGroupId", childColumns = "itemGroupId"),
                         @ForeignKey(entity = Difficulty.class, parentColumns = "id", childColumns = "difficultyId") })
 public class Leaderboard {
 
@@ -13,14 +13,14 @@ public class Leaderboard {
     private int id;
     private String name;
     private int gameModeId;
-    private int itemTypeGroupId;
+    private int itemGroupId;
     private int difficultyId;
     private boolean isCustom;
 
-    public Leaderboard(String name, int gameModeId, int itemTypeGroupId, int difficultyId, boolean isCustom) {
+    public Leaderboard(String name, int gameModeId, int itemGroupId, int difficultyId, boolean isCustom) {
         this.name = name;
         this.gameModeId = gameModeId;
-        this.itemTypeGroupId = itemTypeGroupId;
+        this.itemGroupId = itemGroupId;
         this.difficultyId = difficultyId;
         this.isCustom = isCustom;
     }
@@ -41,8 +41,8 @@ public class Leaderboard {
         return gameModeId;
     }
 
-    public int getItemTypeGroupId() {
-        return itemTypeGroupId;
+    public int getItemGroupId() {
+        return itemGroupId;
     }
 
     public int getDifficultyId() {

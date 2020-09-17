@@ -24,7 +24,7 @@ import java.util.List;
 import hu.respawncontrol.R;
 import hu.respawncontrol.model.room.entity.Difficulty;
 import hu.respawncontrol.model.room.entity.GameMode;
-import hu.respawncontrol.model.room.entity.ItemTypeGroup;
+import hu.respawncontrol.model.room.entity.ItemGroup;
 import hu.respawncontrol.model.room.entity.Leaderboard;
 import hu.respawncontrol.model.room.entity.Score;
 import hu.respawncontrol.view.adapter.ScoreAdapter;
@@ -42,7 +42,7 @@ public class ScoresFragment extends Fragment {
                 .get(ScoresViewModel.class);
 
         final Spinner spinnerGameMode = (Spinner) view.findViewById(R.id.spinner_scores_gameMode);
-        final Spinner spinnerItemTypeGroup = (Spinner) view.findViewById(R.id.spinner_scores_itemTypeGroup);
+        final Spinner spinnerItemGroup = (Spinner) view.findViewById(R.id.spinner_scores_itemGroup);
         final Spinner spinnerDifficulty = (Spinner) view.findViewById(R.id.spinner_scores_difficulty);
         final ImageButton btnSearch = (ImageButton) view.findViewById(R.id.btnSearch);
 
@@ -63,20 +63,20 @@ public class ScoresFragment extends Fragment {
                     }
                 });
 
-        viewModel.getAllItemTypeGroups().observe(getViewLifecycleOwner(),
-                new Observer<List<ItemTypeGroup>>() {
+        viewModel.getAllItemGroups().observe(getViewLifecycleOwner(),
+                new Observer<List<ItemGroup>>() {
                     @Override
-                    public void onChanged(List<ItemTypeGroup> itemTypeGroups) {
-                        List<String> itemTypeGroupNames = new ArrayList<>();
-                        for (ItemTypeGroup itemTypeGroup : itemTypeGroups) {
-                            itemTypeGroupNames.add(itemTypeGroup.getName());
+                    public void onChanged(List<ItemGroup> itemGroups) {
+                        List<String> itemGroupNames = new ArrayList<>();
+                        for (ItemGroup itemGroup : itemGroups) {
+                            itemGroupNames.add(itemGroup.getItemGroupName());
                         }
 
-                        // Set item type group spinner content
-                        ArrayAdapter<String> itemTypeGroupAdapter = new ArrayAdapter<>(ScoresFragment.this.getActivity(),
-                                R.layout.spinner_item_custom, itemTypeGroupNames);
-                        itemTypeGroupAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_custom);
-                        spinnerItemTypeGroup.setAdapter(itemTypeGroupAdapter);
+                        // Set item group spinner content
+                        ArrayAdapter<String> itemGroupNameAdapter = new ArrayAdapter<>(ScoresFragment.this.getActivity(),
+                                R.layout.spinner_item_custom, itemGroupNames);
+                        itemGroupNameAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_custom);
+                        spinnerItemGroup.setAdapter(itemGroupNameAdapter);
                     }
                 });
 
@@ -105,10 +105,10 @@ public class ScoresFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        spinnerItemTypeGroup.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinnerItemGroup.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                viewModel.setSelectedItemTypeGroup(position);
+                viewModel.setSelectedItemGroup(position);
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}

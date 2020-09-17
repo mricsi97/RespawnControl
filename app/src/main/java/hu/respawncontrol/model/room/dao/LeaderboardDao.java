@@ -13,9 +13,9 @@ public interface LeaderboardDao {
     @Insert
     void insert(Leaderboard leaderboard);
 
-    @Query("SELECT * FROM Leaderboard WHERE gameModeId = :gameModeId AND itemTypeGroupId = :itemTypeGroupId AND difficultyId = :difficultyId")
-    Leaderboard getLeaderboard(int gameModeId, int itemTypeGroupId, int difficultyId);
+    @Query("SELECT * FROM Leaderboard WHERE gameModeId = :gameModeId AND itemGroupId = :itemGroupId AND difficultyId = :difficultyId")
+    Leaderboard getLeaderboard(int gameModeId, int itemGroupId, int difficultyId);
 
-    @Query("SELECT * FROM Leaderboard WHERE gameModeId = :gameModeId AND itemTypeGroupId = :itemTypeGroupId AND difficultyId = :difficultyId")
-    LiveData<Leaderboard> getLeaderboardLiveData(int gameModeId, int itemTypeGroupId, int difficultyId);
+    @Query("SELECT * FROM Leaderboard WHERE gameModeId = :gameModeId AND itemGroupId = :itemGroupId AND difficultyId = :difficultyId")
+    LiveData<Leaderboard> getLeaderboardLiveData(int gameModeId, int itemGroupId, int difficultyId);
 }
