@@ -13,6 +13,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.List;
 
 import hu.respawncontrol.R;
@@ -49,6 +51,17 @@ public class ItemGroupsFragment extends Fragment {
             @Override
             public void onItemClick(int position) {
                 // TODO: edit group
+            }
+        });
+
+        final FloatingActionButton fab = view.findViewById(R.id.btnAddItemGroup);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, new AddItemGroupFragment())
+                        .addToBackStack(null)
+                        .commit();
             }
         });
 

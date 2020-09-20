@@ -123,7 +123,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            // Return to home screen first on back press
+            // If something is on the back stack, act normally
+            if(getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                super.onBackPressed();
+                return;
+            }
+            // If nothing on the back stack (aka we are on a navigation fragment)
+            // then check if we are on the home screen.
+            // If not, switch to it.
+            // If yes, act normally (exit app).
             int itemId = navigationView.getCheckedItem().getItemId();
             if (itemId != R.id.nav_home) {
                 switchToHomeFragment();
